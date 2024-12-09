@@ -7,19 +7,27 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <!-- Interface Utilisateur en haut -->
     <div id="ui-container">
         <div id="score">Score: 0</div>
         <div id="level">Niveau: 1</div>
         <div id="timer">Temps restant : s</div>
-        <button id="startButton">Démarrer le niveau</button>
+        <button id="startButton" disabled>Démarrer le niveau</button>
     </div>
 
-    <!-- Conteneur de Jeu -->
     <div id="game-container">
         <canvas id="gameCanvas" width="800" height="600"></canvas>
     </div>
 
+    <!-- Overlay pour sélectionner le nombre d'ascenseurs -->
+    <div id="overlay">
+        <div id="overlay-content">
+            <h2>Choisissez le nombre d'ascenseurs</h2>
+            <input id="elevatorCountInput" type="number" min="1" max="5" value="1">
+            <button id="confirmElevatorCountButton">Confirmer</button>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 </body>
+
 </html>

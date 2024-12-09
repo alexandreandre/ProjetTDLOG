@@ -13,17 +13,70 @@ let timerInterval;
 let spawnInterval;
 let gameRunning = false;
 let selectedElevator = null;
+let selectedElevatorCount = 1; // Valeur par défaut
 
 const elevators = [];
 const characters = [];
 
+
 // Configuration des niveaux avec capacité des ascenseurs et le paramètre floors
-const levelConfig = {
-    1: { elevators: 1, spawnSpeed: 1000, elevatorSpeed: 100, scoreToPass: 70, capacity: 1, floors: 5 },
-    2: { elevators: 1, spawnSpeed: 1000, elevatorSpeed: 100, scoreToPass: 100, capacity: 3, floors: 10 },
-    3: { elevators: 2, spawnSpeed: 1000, elevatorSpeed: 100, scoreToPass: 150, capacity: 3, floors: 10 },
-    // Ajoutez plus de niveaux ici si nécessaire
-};
+const levelConfig =  {1: { // Configs pour 1 ascenseur
+    1: { spawnSpeed: 1750, elevatorSpeed: 200, scoreToPass: 70, capacity: 1, floors: 10,
+        elevatorColor: "blue", movingElevatorColor: "pink", passengerColor: "blue"
+     },
+    2: { spawnSpeed: 2000, elevatorSpeed: 300, scoreToPass: 100, capacity: 1, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     },
+    3: { spawnSpeed: 1500, elevatorSpeed: 200, scoreToPass: 150, capacity: 1, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     }
+},
+2: { // Configs pour 2 ascenseurs
+    1: { spawnSpeed: 1500, elevatorSpeed: 180, scoreToPass: 80, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     },
+    2: { spawnSpeed: 1800, elevatorSpeed: 250, scoreToPass: 120, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     },
+    3: { spawnSpeed: 1400, elevatorSpeed: 180, scoreToPass: 160, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     }
+},
+3: { // Configs pour 3 ascenseurs
+    1: { spawnSpeed: 1300, elevatorSpeed: 160, scoreToPass: 90, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     },
+    2: { spawnSpeed: 1600, elevatorSpeed: 220, scoreToPass: 140, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     },
+    3: { spawnSpeed: 1200, elevatorSpeed: 160, scoreToPass: 180, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     }
+},
+4: { // Configs pour 3 ascenseurs
+    1: { spawnSpeed: 1300, elevatorSpeed: 160, scoreToPass: 90, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     },
+    2: { spawnSpeed: 1600, elevatorSpeed: 220, scoreToPass: 140, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     },
+    3: { spawnSpeed: 1200, elevatorSpeed: 160, scoreToPass: 180, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     }
+},
+5: { // Configs pour 3 ascenseurs
+    1: { spawnSpeed: 1300, elevatorSpeed: 160, scoreToPass: 90, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     },
+    2: { spawnSpeed: 1600, elevatorSpeed: 220, scoreToPass: 140, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     },
+    3: { spawnSpeed: 1200, elevatorSpeed: 160, scoreToPass: 180, capacity: 2, floors: 10,
+        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
+     }
+},}
+// Ajoutez 
+  
 
 // Classe Ascenseur
 class Elevator {
@@ -38,7 +91,7 @@ class Elevator {
     }
 
     moveToFloor(floor) {
-        const config = levelConfig[level];
+        const config = levelConfig[selectedElevatorCount][level];
         if (this.moving) {
             console.log(`Ascenseur ${this.id + 1} est déjà en mouvement.`);
             return;
@@ -112,7 +165,7 @@ class Elevator {
     }
 
     draw() {
-        const config = levelConfig[level];
+        const config = levelConfig[selectedElevatorCount][level];
         const floorHeight = canvas.height / config.floors;
         const x = 200 + this.id * 180;
         const baseWidth = 80;
@@ -121,7 +174,10 @@ class Elevator {
         const elevatorHeight = 60;
         const y = canvas.height - (this.currentFloor * floorHeight) - elevatorHeight;
 
-        ctx.fillStyle = this.moving ? 'orange' : 'gray';
+        const elevatorColor = this.moving ? config.movingElevatorColor : config.elevatorColor;
+        ctx.fillStyle = elevatorColor;
+        ctx.fillRect(x, y, elevatorWidth, elevatorHeight);
+
         ctx.fillRect(x, y, elevatorWidth, elevatorHeight);
 
         const spacing = elevatorWidth / (this.capacity + 1);
@@ -131,7 +187,8 @@ class Elevator {
 
             if (i < this.passengers.length) {
                 const passenger = this.passengers[i];
-                ctx.fillStyle = 'blue';
+                ctx.fillStyle = config.passengerColor;
+
                 ctx.beginPath();
                 ctx.arc(passengerX, passengerY, 8, 0, 2 * Math.PI);
                 ctx.fill();
@@ -165,7 +222,7 @@ class Elevator {
 // Classe Personnage
 class Character {
     constructor() {
-        const config = levelConfig[level];
+        const config = levelConfig[selectedElevatorCount][level];
         this.currentFloor = Math.floor(Math.random() * config.floors);
         this.destinationFloor = this.getRandomDestinationFloor(this.currentFloor, config.floors);
         console.log(`Nouveau passager à l'étage ${this.currentFloor} voulant aller à l'étage ${this.destinationFloor}`);
@@ -184,7 +241,7 @@ class Character {
     }
 
     draw() {
-        const config = levelConfig[level];
+        const config = levelConfig[selectedElevatorCount][level];
         const floorHeight = canvas.height / config.floors;
         const charactersOnSameFloor = Character.getCharactersOnFloor(this.currentFloor);
         const localIndex = charactersOnSameFloor.indexOf(this);
@@ -194,7 +251,9 @@ class Character {
 
         ctx.beginPath();
         ctx.arc(x, y, 10, 0, 2 * Math.PI);
-        ctx.fillStyle = 'blue';
+        ctx.fillStyle = config.passengerColor;
+        ctx.fill();
+
         ctx.fill();
 
         ctx.fillStyle = 'white';
@@ -212,14 +271,15 @@ function startLevel() {
     console.log("Démarrage du niveau...");
     gameRunning = true;
 
-    const config = levelConfig[level];
+    const config = levelConfig[selectedElevatorCount][level];
     resetGame(config);
     setupElevators();
 
     document.getElementById("startButton").disabled = true;
     startTimer();
-    console.log(`Niveau ${level} démarré.`);
+    console.log(`Niveau ${level} démarré avec ${selectedElevatorCount} ascenseur(s).`);
 }
+
 
 function resetGame(config) {
     score = 0;
@@ -227,15 +287,17 @@ function resetGame(config) {
     elevators.length = 0;
     selectedElevator = null;
 
-    for (let i = 0; i < config.elevators; i++) {
+    for (let i = 0; i < selectedElevatorCount; i++) {
         elevators.push(new Elevator(i, config.capacity));
     }
-    console.log(`${config.elevators} ascenseur(s) initialisé(s) avec une capacité de ${config.capacity}`);
+    console.log(`${selectedElevatorCount} ascenseur(s) initialisé(s) avec une capacité de ${config.capacity}`);
 
     clearInterval(spawnInterval);
     spawnInterval = setInterval(spawnCharacter, config.spawnSpeed);
     updateUI();
 }
+
+
 
 function updateScore() {
     document.getElementById('score').innerText = `Score: ${score}`;
@@ -270,7 +332,7 @@ function checkLevelCompletion() {
     gameRunning = false;
     document.getElementById("startButton").disabled = false;
 
-    const config = levelConfig[level];
+    const config = levelConfig[selectedElevatorCount][level];
     if (score >= config.scoreToPass) {
         alert(`Niveau ${level} terminé ! Vous passez au niveau ${level + 1}.`);
         level++;
@@ -278,7 +340,7 @@ function checkLevelCompletion() {
         alert(`Niveau ${level} échoué. Essayez à nouveau.`);
     }
 
-    if (level > Object.keys(levelConfig).length) {
+    if (level > Object.keys(levelConfig[selectedElevatorCount]).length) {
         alert("Félicitations ! Vous avez terminé tous les niveaux !");
         level = 1;
     }
@@ -291,7 +353,7 @@ function spawnCharacter() {
 }
 
 function drawBuilding() {
-    const config = levelConfig[level];
+    const config = levelConfig[selectedElevatorCount][level];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const floorHeight = canvas.height / config.floors;
@@ -331,7 +393,7 @@ function gameLoop() {
 }
 
 canvas.addEventListener('click', function(event) {
-    const config = levelConfig[level];
+    const config = levelConfig[selectedElevatorCount][level];
     const floorHeight = canvas.height / config.floors;
     const rect = canvas.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
@@ -394,6 +456,27 @@ canvas.addEventListener('click', function(event) {
 function initGame() {
     console.log("Initialisation du jeu...");
     document.getElementById("startButton").addEventListener("click", startLevel);
+
+    // Nouveau : Gérer le bouton de confirmation du nombre d'ascenseurs
+    const confirmButton = document.getElementById("confirmElevatorCountButton");
+    confirmButton.addEventListener("click", () => {
+        const elevatorInput = document.getElementById("elevatorCountInput");
+        const val = parseInt(elevatorInput.value, 10);
+        if (!isNaN(val) && val >= 1) {
+            selectedElevatorCount = val;
+        } else {
+            selectedElevatorCount = 1;
+        }
+
+        // Cacher l’overlay
+        document.getElementById("overlay").style.display = "none";
+
+        // Activer le bouton "Démarrer le niveau"
+        document.getElementById("startButton").disabled = false;
+
+        console.log(`Nombre d'ascenseurs sélectionné : ${selectedElevatorCount}`);
+    });
+
     drawBuilding();
     requestAnimationFrame(gameLoop);
     console.log("Jeu initialisé.");

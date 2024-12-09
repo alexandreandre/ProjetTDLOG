@@ -25,6 +25,9 @@ ProjetTDLOG/
         └── index.html        --> Page principale du jeu
 Changements durant la séance : 
 - On devait cliquer sur l'ascenseur souhaité à chaque fois qu'on voulait le déplacer --> Maintenant, on doit cliquer sur la colonne de l'ascenseur à l'étage qu'on souhaite directement
+- Ajout de floor aux paramètres de chaque niveau
+- Ajout du choix du mode de jeu (de 1 à 5 ascenseurs)
+- Ajout du choix de la couleur de l'elevator à l'arrêt, en mouvement, et des personnages, selon le niveau
 
 A faire :
 - 5 niveaux cohérent
