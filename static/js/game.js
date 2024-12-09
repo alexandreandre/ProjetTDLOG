@@ -389,19 +389,46 @@ canvas.addEventListener('click', function(event) {
         return;
     }
 
-    // Si un ascenseur est sélectionné, vérifier si un étage a été cliqué
-    if (selectedElevator) {
-        // Déterminer l'étage cliqué en fonction de Y
-        const floorNum = Math.floor((canvas.height - clickY) / floorHeight);
-        const targetFloor = Math.max(0, Math.min(floors - 1, floorNum));
+    // // Si un ascenseur est sélectionné, vérifier si un étage a été cliqué
+    // if (selectedElevator) {
+    //     // Déterminer l'étage cliqué en fonction de Y
+    //     const floorNum = Math.floor((canvas.height - clickY) / floorHeight);
+    //     const targetFloor = Math.max(0, Math.min(floors - 1, floorNum));
 
-        console.log(`Étape cible sélectionnée : Étage ${targetFloor}`);
+    //     console.log(`Étape cible sélectionnée : Étage ${targetFloor}`);
 
-        // Déplacer l'ascenseur sélectionné vers l'étage cible
-        selectedElevator.moveToFloor(targetFloor);
-        selectedElevator = null; // Déselectionner après avoir donné l'ordre
+    //     // Déplacer l'ascenseur sélectionné vers l'étage cible
+    //     selectedElevator.moveToFloor(targetFloor);
+    //     selectedElevator = null; // Déselectionner après avoir donné l'ordre
+    //     drawBuilding(); // Mettre à jour l'affichage
+    // }
+    // Déterminer l'étage cliqué en fonction de Y
+    const floorNum = Math.floor((canvas.height - clickY) / floorHeight);
+    const targetFloor = Math.max(0, Math.min(floors - 1, floorNum));
+
+    // Déterminer la colonne cliquée en fonction de X
+    clickedElevator = null;
+    elevators.forEach(elevator => {
+        const x = 100 + elevator.id * 180; // Position X de la colonne de l'ascenseur
+        const baseWidth = 80; // Largeur de base de l'ascenseur
+        const widthPerCapacity = 20; // Largeur ajoutée en fonction de la capacité
+        const elevatorWidth = baseWidth + (widthPerCapacity * elevator.capacity);
+
+        // Vérifie si le clic se trouve dans la colonne de cet ascenseur
+        if (clickX >= x && clickX <= x + elevatorWidth) {
+            clickedElevator = elevator;
+        }
+    });
+
+    // Si un ascenseur a été cliqué, déplacer cet ascenseur
+    if (clickedElevator) {
+        console.log(`Ascenseur ${clickedElevator.id + 1} sélectionné pour aller à l'étage ${targetFloor}`);
+        clickedElevator.moveToFloor(targetFloor);
         drawBuilding(); // Mettre à jour l'affichage
+    } else {
+        console.log("Aucun ascenseur sélectionné. Cliquez sur une colonne d'ascenseur.");
     }
+
 });
 
 // Initialiser le jeu
