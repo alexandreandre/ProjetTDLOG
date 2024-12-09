@@ -1,0 +1,55 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+/* Conteneur de l'interface utilisateur */
+#ui-container {
+    width: 800px;
+    margin: 20px auto 10px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#score, #level, #timer {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#startButton {
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#game-container {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border: 2px solid #000000;
+}
+
+/* Style pour le canvas */
+#gameCanvas {
+    display: block;
+    background-color: #e0e0e0;
+    border: 1px solid #000;
+}
+
+/* Style pour les numéros d'étage */
+.floor-label {
+    position: absolute;
+    right: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+}

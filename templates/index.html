@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Gestion d’Ascenseurs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- Interface Utilisateur en haut -->
+    <div id="ui-container">
+        <div id="score">Score: 0</div>
+        <div id="level">Niveau: 1</div>
+        <div id="timer">Temps restant : s</div>
+        <button id="startButton">Démarrer le niveau</button>
+    </div>
+
+    <!-- Conteneur de Jeu -->
+    <div id="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+</body>
+</html>
