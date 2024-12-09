@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    background-color: #ffffff;
     font-family: Arial, sans-serif;
 }
 
@@ -41,8 +41,8 @@ body {
 /* Style pour le canvas */
 #gameCanvas {
     display: block;
-    background-color: #e0e0e0;
-    border: 1px solid #000;
+    background-color: #a8543f;
+    border: 1px solid #4018b8;
 }
 
 /* Style pour les numéros d'étage */
