@@ -26,4 +26,19 @@ ProjetTDLOG/
 Changements durant la séance : 
 - On devait cliquer sur l'ascenseur souhaité à chaque fois qu'on voulait le déplacer --> Maintenant, on doit cliquer sur la colonne de l'ascenseur à l'étage qu'on souhaite directement
 
-
+A faire :
+- 5 niveaux cohérent
+- Modes de jeu
+    ├── Solo     
+            ├── Niveaux
+            ├── Contre la montre (Max de personnes en 1 min)
+            ├── Satisfaction (style cooking fever)
+    ├── En ligne     
+            ├── 1v1 Niveaux
+            ├── 1v1 Contre la montre
+            ├── 1v1 Satisfaction (style cooking fever)
+    ├── Contre l'IA
+            ├── 1v1 Niveaux
+            ├── 1v1 Contre la montre 
+            ├── 1v1 Satisfaction (style cooking fever)
+    
