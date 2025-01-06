@@ -5,6 +5,7 @@ console.log("game.js chargé correctement.");
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+
 // Variables de jeu
 let score = 0;
 let level = 1;
@@ -230,7 +231,7 @@ class Elevator {
         const spacing = elevatorWidth / (this.capacity + 1);
         
         // On peut ajuster la taille des passagers
-        const passengerRadius = elevatorHeight / 7; // ex. 1/4 de l'ascenseur
+        const passengerRadius = 2*floorHeight**(1/2); // ex. 1/4 de l'ascenseur
         for (let i = 0; i < this.capacity; i++) {
             const passengerX = x + spacing * (i + 1);
             // Position verticale du passager au centre de l'ascenseur
@@ -305,7 +306,7 @@ class Character {
         const localIndex = charactersOnSameFloor.indexOf(this);
                 // Rayon du personnage : 1/6e de la hauteur d’un étage, par exemple
         // Ajuste ce ratio à ta convenance (0.1, 0.2, 0.3…)
-        const characterRadius = floorHeight /7; 
+        const characterRadius = 2*floorHeight**(1/2); 
 
         // Position X : on décale chaque personnage sur la même étage pour qu’ils ne se superposent pas
         // Ici, on part de 80, par exemple, et on recule de 40 pixels par personnage
