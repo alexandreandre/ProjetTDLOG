@@ -21,24 +21,27 @@ const characters = [];
 
 // Configuration des niveaux avec capacité des ascenseurs et le paramètre floors
 const levelConfig =  {1: { // Configs pour 1 ascenseur
-    1: { spawnSpeed: 1750, elevatorSpeed: 200, scoreToPass: 70, capacity: 1, floors: 10,
+    1: { spawnSpeed: 1750, elevatorSpeed: 200, scoreToPass: 70, capacity: 1, floors: 5,
         elevatorColor: "blue", movingElevatorColor: "pink", passengerColor: "blue"
      },
-    2: { spawnSpeed: 2000, elevatorSpeed: 300, scoreToPass: 100, capacity: 1, floors: 10,
+    2: { spawnSpeed: 2000, elevatorSpeed: 150, scoreToPass: 100, capacity: 1, floors: 8,
         elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
      },
-    3: { spawnSpeed: 1500, elevatorSpeed: 200, scoreToPass: 150, capacity: 1, floors: 10,
+    3: { spawnSpeed: 1400, elevatorSpeed: 50, scoreToPass: 140, capacity: 1, floors: 10,
         elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
-     }
+     },
+    4: { spawnSpeed: 1300, elevatorSpeed: 10, scoreToPass: 160, capacity: 1, floors: 10,
+    elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "lime"
+    }
 },
 2: { // Configs pour 2 ascenseurs
-    1: { spawnSpeed: 1500, elevatorSpeed: 180, scoreToPass: 80, capacity: 2, floors: 10,
+    3: { spawnSpeed: 2000, elevatorSpeed: 800, scoreToPass: 50, capacity: 1, floors: 5,
         elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
      },
-    2: { spawnSpeed: 1800, elevatorSpeed: 250, scoreToPass: 120, capacity: 2, floors: 10,
+    2: { spawnSpeed: 2300, elevatorSpeed: 400, scoreToPass: 90, capacity: 1, floors: 8,
         elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
      },
-    3: { spawnSpeed: 1400, elevatorSpeed: 180, scoreToPass: 160, capacity: 2, floors: 10,
+    1: { spawnSpeed: 2000, elevatorSpeed: 300, scoreToPass: 110, capacity: 1, floors: 10,
         elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
      }
 },
