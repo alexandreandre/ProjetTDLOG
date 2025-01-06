@@ -1,33 +1,41 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu de Gestion d’Ascenseurs</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jeu de Gestion d’Ascenseurs</title>
+  
+  <!-- Google Fonts (ex. Press Start 2P) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <div id="ui-container">
-        <div id="score">Score: 0</div>
-        <div id="level">Niveau: 1</div>
-        <div id="timer">Temps restant : s</div>
-        <button id="startButton" disabled>Démarrer le niveau</button>
-    </div>
+  <div id="ui-container">
+    <div id="score">Score: 0</div>
+    <div id="level">Niveau: 1</div>
+    <div id="timer">Temps restant : s</div>
+    <button id="startButton" disabled>Démarrer le niveau</button>
+  </div>
 
-    <div id="game-container">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-    </div>
+  <div id="game-container">
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+  </div>
 
-    <!-- Overlay pour sélectionner le nombre d'ascenseurs -->
-    <div id="overlay">
-        <div id="overlay-content">
-            <h2>Choisissez le nombre d'ascenseurs</h2>
-            <input id="elevatorCountInput" type="number" min="1" max="5" value="1">
-            <button id="confirmElevatorCountButton">Confirmer</button>
-        </div>
+  <!-- Overlay pour sélectionner le nombre d'ascenseurs -->
+  <div id="overlay">
+    <div id="overlay-content">
+      <h2>Choisissez le nombre d'ascenseurs</h2>
+      <input id="elevatorCountInput" type="number" min="1" max="5" value="1" />
+      <button id="confirmElevatorCountButton">Confirmer</button>
     </div>
+  </div>
 
-    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 </body>
-
 </html>
