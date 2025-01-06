@@ -97,7 +97,6 @@ function roundRect(ctx, x, y, width, height, radius) {
     ctx.fill();
     ctx.stroke();
 }
->>>>>>> d57cf05586c4836781efdc274b07e25cfd6973ee
 
 // Classe Ascenseur
 class Elevator {
