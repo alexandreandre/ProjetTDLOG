@@ -35,10 +35,10 @@ const levelConfig = {
         }
     },
     2: { // Configs pour 2 ascenseurs
-        1: { spawnSpeed: 2000, elevatorSpeed: 800, scoreToPass: 50, capacity: 1, floors: 5,
+        1: { spawnSpeed: 1700, elevatorSpeed: 500, scoreToPass: 50, capacity: 1, floors: 5,
             elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
          },
-        2: { spawnSpeed: 2300, elevatorSpeed: 400, scoreToPass: 90, capacity: 1, floors: 8,
+        2: { spawnSpeed: 1700, elevatorSpeed: 400, scoreToPass: 90, capacity: 1, floors: 8,
             elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
          },
         3: { spawnSpeed: 2000, elevatorSpeed: 300, scoreToPass: 110, capacity: 1, floors: 10,
@@ -387,9 +387,15 @@ function updateLevel() {
 }
 
 function updateUI() {
-    updateScore();
-    updateLevel();
+    updateScore();     // met à jour le score courant
+    updateLevel();     // met à jour le niveau actuel
+
+    // Récupérer la config courante
+    const config = levelConfig[selectedElevatorCount][level];
+    // Mettre à jour le div #scoreToPass avec la valeur de config.scoreToPass
+    document.getElementById('scoreToPass').innerText = `Score à atteindre : ${config.scoreToPass}`;
 }
+
 
 function startTimer() {
     timer = 25;
