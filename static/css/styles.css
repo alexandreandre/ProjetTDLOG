@@ -1,77 +1,171 @@
-body {
+/* -------------------------------------------------
+   STYLE GLOBAL
+   ------------------------------------------------- */
+   html, body {
     margin: 0;
     padding: 0;
-    background-color: #ffffff;
-    font-family: Arial, sans-serif;
-}
-
-/* Conteneur de l'interface utilisateur */
-#ui-container {
-    width: 800px;
-    margin: 20px auto 10px auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#score, #level, #timer {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-#startButton {
-    padding: 10px 20px;
-    background-color: green;
-    color: white;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-#game-container {
+    background: linear-gradient(135deg, #2a2a72, #009ffd);
+    font-family: 'Press Start 2P', Arial, sans-serif;
+    color: #fff; /* Couleur de texte par défaut blanche */
+    overflow: hidden; /* On évite le scroll */
+  }
+  
+  body {
+    /* Petit offset en haut, si besoin */
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  /* -------------------------------------------------
+     CONTENEUR DU JEU
+     ------------------------------------------------- */
+  #game-container {
     position: relative;
     width: 800px;
     height: 600px;
     margin: 0 auto;
-    background-color: #ffffff;
-    border: 2px solid #000000;
-}
-
-/* Style pour le canvas */
-#gameCanvas {
+    border: 2px solid #000;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    border-radius: 8px;
+    background: #2b2b2b;
+  }
+  
+  /* -------------------------------------------------
+     LE CANVAS
+     ------------------------------------------------- */
+  #gameCanvas {
     display: block;
-    background-color: #a8543f;
-    border: 1px solid #4018b8;
-}
-
-/* Style pour les numéros d'étage */
-.floor-label {
+    /* Fond sombre ou un dégradé plus subtil */
+    background: #202020;
+    border: 3px solid #00ffea;
+    border-radius: 8px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    margin: 0 auto;
+  }
+  
+  /* -------------------------------------------------
+     INTERFACE UTILISATEUR (SCORE, LEVEL, TIMER)
+     ------------------------------------------------- */
+  #ui-container {
+    width: 800px;
+    margin: 0 auto 10px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.6);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+  
+  #score, #level, #timer {
+    font-size: 14px;
+    color: #00ffea;
+    margin: 0 10px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  }
+  
+  /* -------------------------------------------------
+     BOUTON START
+     ------------------------------------------------- */
+  #startButton {
+    padding: 8px 16px;
+    background-color: #007b38; /* Vert punchy */
+    color: #fff;
+    border: 2px solid #00ffea;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.2s, transform 0.2s;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    font-family: 'Press Start 2P', Arial, sans-serif;
+  }
+  
+  #startButton:hover {
+    background-color: #00a44c;
+    transform: scale(1.05);
+  }
+  
+  #startButton:disabled {
+    background-color: #333;
+    color: #aaa;
+    border-color: #666;
+    cursor: not-allowed;
+  }
+  
+  /* -------------------------------------------------
+     OVERLAY
+     ------------------------------------------------- */
+  #overlay {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    z-index: 9999;
+  }
+  
+  #overlay-content {
+    background: #222;
+    padding: 20px 30px;
+    border-radius: 8px;
+    text-align: center;
+    color: #fff;
+    border: 2px solid #00ffea;
+    box-shadow: 0 0 10px rgba(0,0,0,0.7);
+  }
+  
+  #overlay-content h2 {
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #00ffea;
+    text-shadow: 1px 1px 2px #000;
+  }
+  
+  #overlay-content input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    font-size: 16px;
+    text-align: center;
+    font-family: 'Press Start 2P', Arial, sans-serif;
+    margin-right: 10px;
+    border: 2px solid #00ffea;
+    background: #000;
+    color: #00ffea;
+    border-radius: 4px;
+    outline: none;
+  }
+  
+  #overlay-content button {
+    background-color: #007b38;
+    color: #fff;
+    border: 2px solid #00ffea;
+    font-size: 14px;
+    padding: 8px 16px;
+    font-family: 'Press Start 2P', Arial, sans-serif;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  
+  #overlay-content button:hover {
+    background-color: #00a44c;
+    transform: scale(1.05);
+  }
+  
+  /* -------------------------------------------------
+     FLOORS LABEL (SI UTILISÉ) - exemple
+     ------------------------------------------------- */
+  .floor-label {
     position: absolute;
     right: 10px;
     font-size: 14px;
     font-weight: bold;
-    color: black;
-}
-
-/* Overlay plein écran */
-#overlay {
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: rgba(0,0,0,0.5); /* fond semi-transparent */
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 9999;
-}
-
-/* Contenu de l'overlay */
-#overlay-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    text-align: center;
-}
+    color: #00ffea;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  }
+  
