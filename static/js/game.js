@@ -20,7 +20,6 @@ const elevators = [];
 const characters = [];
 
 // Configuration des niveaux avec capacité des ascenseurs et le paramètre floors
-
 const levelConfig = {
     1: {
         1: { spawnSpeed: 1750, elevatorSpeed: 200, scoreToPass: 70, capacity: 1, floors: 5,
@@ -108,23 +107,23 @@ class Elevator {
         this.destinationFloor = null;
         this.passengers = [];
         this.moving = false;
-        console.log(`Ascenseur ${this.id + 1} initialisé avec une capacité de ${this.capacity}`);
+        console.log(Ascenseur ${this.id + 1} initialisé avec une capacité de ${this.capacity});
     }
 
     moveToFloor(floor) {
         const config = levelConfig[selectedElevatorCount][level];
         if (this.moving) {
-            console.log(`Ascenseur ${this.id + 1} est déjà en mouvement.`);
+            console.log(Ascenseur ${this.id + 1} est déjà en mouvement.);
             return;
         }
         if (floor === this.currentFloor) {
-            console.log(`Ascenseur ${this.id + 1} est déjà à l'étage ${floor}.`);
+            console.log(Ascenseur ${this.id + 1} est déjà à l'étage ${floor}.);
             return;
         }
         this.moving = true;
         this.destinationFloor = floor;
         console.log(
-          `Ascenseur ${this.id + 1} déplacé de l'étage ${this.currentFloor} à l'étage ${floor}`
+          Ascenseur ${this.id + 1} déplacé de l'étage ${this.currentFloor} à l'étage ${floor}
         );
 
         const direction = floor > this.currentFloor ? 1 : -1;
@@ -135,12 +134,12 @@ class Elevator {
             ) {
                 clearInterval(moveInterval);
                 this.moving = false;
-                console.log(`Ascenseur ${this.id + 1} a atteint la limite des étages.`);
+                console.log(Ascenseur ${this.id + 1} a atteint la limite des étages.);
                 return;
             }
 
             this.currentFloor += direction;
-            console.log(`Ascenseur ${this.id + 1} est maintenant à l'étage ${this.currentFloor}`);
+            console.log(Ascenseur ${this.id + 1} est maintenant à l'étage ${this.currentFloor});
 
             if (this.currentFloor === floor) {
                 clearInterval(moveInterval);
@@ -156,11 +155,11 @@ class Elevator {
         if (this.passengers.length < this.capacity) {
             this.passengers.push(passenger);
             console.log(
-              `Passager embarqué dans l'ascenseur ${this.id + 1} pour l'étage ${passenger.destinationFloor}`
+              Passager embarqué dans l'ascenseur ${this.id + 1} pour l'étage ${passenger.destinationFloor}
             );
             return true;
         }
-        console.log(`Ascenseur ${this.id + 1} plein. Passager ne peut pas embarquer.`);
+        console.log(Ascenseur ${this.id + 1} plein. Passager ne peut pas embarquer.);
         return false;
     }
 
@@ -169,7 +168,7 @@ class Elevator {
         this.passengers = this.passengers.filter((p) => {
             if (p.destinationFloor === this.currentFloor) {
                 score += 10; // Exemple de score
-                console.log(`Passager déchargé à l'étage ${this.currentFloor}`);
+                console.log(Passager déchargé à l'étage ${this.currentFloor});
                 return false;
             }
             return true;
@@ -255,9 +254,9 @@ class Elevator {
                 // Affichage du floor de destination : on adapte aussi la taille de police
                 ctx.fillStyle = "#fff";
                 ctx.textAlign = "center";
-                ctx.font = `bold ${passengerRadius * 1.2}px Arial`;
+                ctx.font = bold ${passengerRadius * 1.2}px Arial;
                 ctx.fillText(
-                  `${this.passengers[i].destinationFloor}`,
+                  ${this.passengers[i].destinationFloor},
                   passengerX,
                   passengerY + (passengerRadius * 0.4)
                 );
@@ -285,7 +284,7 @@ class Character {
         const config = levelConfig[selectedElevatorCount][level];
         this.currentFloor = Math.floor(Math.random() * config.floors);
         this.destinationFloor = this.getRandomDestinationFloor(this.currentFloor, config.floors);
-        console.log(`Nouveau passager à l'étage ${this.currentFloor} voulant aller à l'étage ${this.destinationFloor}`);
+        console.log(Nouveau passager à l'étage ${this.currentFloor} voulant aller à l'étage ${this.destinationFloor});
     }
 
     getRandomDestinationFloor(excludeFloor, totalFloors) {
@@ -339,7 +338,7 @@ class Character {
         // On adapte la taille de la police au rayon
         ctx.fillStyle = "#fff";
         ctx.textAlign = "center";
-        ctx.font = `bold ${characterRadius * 1.4}px Arial`; 
+        ctx.font = bold ${characterRadius * 1.4}px Arial; 
         // Légèrement plus bas que le centre du cercle pour être visible
         ctx.fillText(this.destinationFloor, x, y + (characterRadius * 0.4)+1);
     }
@@ -359,7 +358,7 @@ function startLevel() {
 
     document.getElementById("startButton").disabled = true;
     startTimer();
-    console.log(`Niveau ${level} démarré avec ${selectedElevatorCount} ascenseur(s).`);
+    console.log(Niveau ${level} démarré avec ${selectedElevatorCount} ascenseur(s).);
 }
 
 function resetGame(config) {
@@ -372,7 +371,7 @@ function resetGame(config) {
         elevators.push(new Elevator(i, config.capacity));
     }
     console.log(
-      `${selectedElevatorCount} ascenseur(s) initialisé(s) avec une capacité de ${config.capacity}`
+      ${selectedElevatorCount} ascenseur(s) initialisé(s) avec une capacité de ${config.capacity}
     );
 
     clearInterval(spawnInterval);
@@ -381,11 +380,11 @@ function resetGame(config) {
 }
 
 function updateScore() {
-    document.getElementById('score').innerText = `Score: ${score}`;
+    document.getElementById('score').innerText = Score: ${score};
 }
 
 function updateLevel() {
-    document.getElementById('level').innerText = `Niveau: ${level}`;
+    document.getElementById('level').innerText = Niveau: ${level};
 }
 
 function updateUI() {
@@ -395,17 +394,17 @@ function updateUI() {
     // Récupérer la config courante
     const config = levelConfig[selectedElevatorCount][level];
     // Mettre à jour le div #scoreToPass avec la valeur de config.scoreToPass
-    document.getElementById('scoreToPass').innerText = `Score à atteindre : ${config.scoreToPass}`;
+    document.getElementById('scoreToPass').innerText = Score à atteindre : ${config.scoreToPass};
 }
 
 
 function startTimer() {
     timer = 25;
-    document.getElementById("timer").innerText = `Temps restant : ${timer}s`;
+    document.getElementById("timer").innerText = Temps restant : ${timer}s;
 
     timerInterval = setInterval(() => {
         timer--;
-        document.getElementById("timer").innerText = `Temps restant : ${timer}s`;
+        document.getElementById("timer").innerText = Temps restant : ${timer}s;
 
         if (timer <= 0) {
             clearInterval(timerInterval);
@@ -421,23 +420,52 @@ function checkLevelCompletion() {
 
     const config = levelConfig[selectedElevatorCount][level];
     if (score >= config.scoreToPass) {
-        alert(`Niveau ${level} terminé ! Vous passez au niveau ${level + 1}.`);
-        level++;
+        // --- NIVEAU RÉUSSI ---
+        const levelUpText = document.getElementById("level-up-text");
+        levelUpText.innerText = Niveau ${level} terminé ! Vous passez au niveau ${level + 1}.;
+
+        const levelUpOverlay = document.getElementById("level-up-overlay");
+        levelUpOverlay.style.display = "flex";
+
+        setTimeout(() => {
+            levelUpOverlay.style.display = "none";
+            level++;
+        }, 3000);
+
     } else {
-        alert(`Niveau ${level} échoué. Essayez à nouveau.`);
+        // --- NIVEAU ÉCHOUÉ ---
+
+        // (1) Mettre à jour le texte de l’overlay
+        const failText = document.getElementById("level-fail-text");
+        failText.innerText = Niveau ${level} échoué. Essayez à nouveau !;
+
+        // (2) Afficher l’overlay
+        const failOverlay = document.getElementById("level-fail-overlay");
+        failOverlay.style.display = "flex";
+
+        // (3) Après, par exemple, 3 secondes, masquer l’overlay
+        setTimeout(() => {
+            failOverlay.style.display = "none";
+            // Remettre le niveau au même si tu veux retenter 
+            // (ou level = 1 si tu veux tout recommencer)
+            // level = 1; 
+        }, 3000);
     }
 
-    // Si on dépasse le nombre de niveaux config
+    // Vérification si on a dépassé le nombre de niveaux
     if (level > Object.keys(levelConfig[selectedElevatorCount]).length) {
         alert("Félicitations ! Vous avez terminé tous les niveaux !");
         level = 1;
     }
 }
 
+
+
+
 function spawnCharacter() {
     const character = new Character();
     characters.push(character);
-    console.log(`Passager ajouté. Total passagers en attente : ${characters.length}`);
+    console.log(Passager ajouté. Total passagers en attente : ${characters.length});
 }
 
 function drawBuilding() {
@@ -453,7 +481,7 @@ function drawBuilding() {
     const labelFontSize = Math.min(32, Math.max(8, floorHeight * 0.3));
 
     // On compose la valeur de font
-    ctx.font = `bold ${labelFontSize}px "Press Start 2P"`;
+    ctx.font = bold ${labelFontSize}px "Press Start 2P";
     ctx.textAlign = 'right';
     ctx.strokeStyle = "#888"; 
     ctx.lineWidth = 1;
@@ -470,7 +498,7 @@ function drawBuilding() {
 
         // Dessiner le numéro de l’étage
         ctx.fillStyle = "#00ffea";
-        ctx.fillText(`${i}`, canvas.width - 10, canvasY - 5);
+        ctx.fillText(${i}, canvas.width - 10, canvasY - 5);
     }
 
     // Dessin des ascenseurs et des personnages
@@ -489,7 +517,9 @@ function setupElevators() {
 }
 
 function gameLoop() {
+    // Puis dessine le bâtiment et tout le reste
     drawBuilding();
+
     requestAnimationFrame(gameLoop);
 }
 
@@ -523,10 +553,10 @@ canvas.addEventListener('click', function(event) {
         // Gérer la sélection / déselection
         if (selectedElevator === clickedElevator) {
             selectedElevator = null;
-            console.log(`Ascenseur ${clickedElevator.id + 1} déselectionné.`);
+            console.log(Ascenseur ${clickedElevator.id + 1} déselectionné.);
         } else {
             selectedElevator = clickedElevator;
-            console.log(`Ascenseur ${clickedElevator.id + 1} sélectionné.`);
+            console.log(Ascenseur ${clickedElevator.id + 1} sélectionné.);
         }
         drawBuilding();
         return;
@@ -550,7 +580,7 @@ canvas.addEventListener('click', function(event) {
 
     if (clickedElevator) {
         console.log(
-          `Ascenseur ${clickedElevator.id + 1} sélectionné pour aller à l'étage ${targetFloor}`
+          Ascenseur ${clickedElevator.id + 1} sélectionné pour aller à l'étage ${targetFloor}
         );
         clickedElevator.moveToFloor(targetFloor);
         drawBuilding();
@@ -558,6 +588,8 @@ canvas.addEventListener('click', function(event) {
         console.log("Aucun ascenseur sélectionné. Cliquez sur une colonne d'ascenseur.");
     }
 });
+
+
 
 function initGame() {
     console.log("Initialisation du jeu...");
@@ -580,8 +612,59 @@ function initGame() {
         // Activer le bouton "Démarrer le niveau"
         document.getElementById("startButton").disabled = false;
 
-        console.log(`Nombre d'ascenseurs sélectionné : ${selectedElevatorCount}`);
+        console.log(Nombre d'ascenseurs sélectionné : ${selectedElevatorCount});
     });
+    // Paramètres
+    const settingsButton = document.getElementById("settingsButton");
+    const settingsOverlay = document.getElementById("settings-overlay");
+    const themeSelect = document.getElementById("themeSelect");
+    const applySettingsButton = document.getElementById("applySettingsButton");
+    const cancelSettingsButton = document.getElementById("cancelSettingsButton");
+
+    // Ouvrir menu paramètres
+    settingsButton.addEventListener("click", () => {
+        settingsOverlay.style.display = "flex";
+    });
+
+    // Appliquer le thème
+    applySettingsButton.addEventListener("click", () => {
+        const selectedTheme = themeSelect.value; // "default", "retro", "night"
+        document.body.classList.remove("default-theme", "retro-theme", "night-theme");
+        document.body.classList.add(${selectedTheme}-theme);
+        // Fermer
+        settingsOverlay.style.display = "none";
+    });
+
+    // Annuler
+    cancelSettingsButton.addEventListener("click", () => {
+        settingsOverlay.style.display = "none";
+    });
+
+    // Afficher le menu « mode de jeu »
+  const modeOverlay = document.getElementById("mode-overlay");
+  modeOverlay.style.display = "flex";
+
+  // Sélection des boutons de mode
+  const soloModeButton = document.getElementById("soloModeButton");
+  const aiModeButton = document.getElementById("aiModeButton");
+  const onlineModeButton = document.getElementById("onlineModeButton");
+
+  // Mode Solo
+  soloModeButton.addEventListener("click", () => {
+    modeOverlay.style.display = "none";
+    document.getElementById("overlay").style.display = "flex";
+  });
+
+  // 1 vs 1 contre l'IA (inactif)
+  aiModeButton.addEventListener("click", () => {
+    alert("Mode 1 vs 1 contre l'IA pas encore implémenté !");
+  });
+
+  // 1 vs 1 en ligne (inactif)
+  onlineModeButton.addEventListener("click", () => {
+    alert("Mode 1 vs 1 en ligne pas encore implémenté !");
+  });
+
 
     drawBuilding();
     requestAnimationFrame(gameLoop);
