@@ -122,8 +122,8 @@ class Elevator {
         }
         this.moving = true;
         this.destinationFloor = floor;
-        console.log(
-          `Ascenseur ${this.id + 1} déplacé de l'étage ${this.currentFloor} à l'étage ${floor}`
+        console.log(`
+          Ascenseur ${this.id + 1} déplacé de l'étage ${this.currentFloor} à l'étage ${floor}`
         );
 
         const direction = floor > this.currentFloor ? 1 : -1;
@@ -154,8 +154,8 @@ class Elevator {
     loadPassenger(passenger) {
         if (this.passengers.length < this.capacity) {
             this.passengers.push(passenger);
-            console.log(
-              `Passager embarqué dans l'ascenseur ${this.id + 1} pour l'étage ${passenger.destinationFloor}`
+            console.log(`
+              Passager embarqué dans l'ascenseur ${this.id + 1} pour l'étage ${passenger.destinationFloor}`
             );
             return true;
         }
@@ -255,9 +255,9 @@ class Elevator {
                 ctx.fillStyle = "#fff";
                 ctx.textAlign = "center";
                 ctx.font = `bold ${passengerRadius * 1.2}px Arial`;
-                ctx.fillText(
-                  `${this.passengers[i].destinationFloor}`,
-                  passengerX,
+                ctx.fillText(`
+                  ${this.passengers[i].destinationFloor}`,
+                  passengerX-70,
                   passengerY + (passengerRadius * 0.4)
                 );
             } else {
@@ -370,8 +370,8 @@ function resetGame(config) {
     for (let i = 0; i < selectedElevatorCount; i++) {
         elevators.push(new Elevator(i, config.capacity));
     }
-    console.log(
-      `${selectedElevatorCount} ascenseur(s) initialisé(s) avec une capacité de ${config.capacity}`
+    console.log(`
+      ${selectedElevatorCount} ascenseur(s) initialisé(s) avec une capacité de ${config.capacity}`
     );
 
     clearInterval(spawnInterval);
@@ -420,18 +420,47 @@ function checkLevelCompletion() {
 
     const config = levelConfig[selectedElevatorCount][level];
     if (score >= config.scoreToPass) {
-        alert(`Niveau ${level} terminé ! Vous passez au niveau ${level + 1}.`);
-        level++;
+        // --- NIVEAU RÉUSSI ---
+        const levelUpText = document.getElementById("level-up-text");
+        levelUpText.innerText = `Niveau ${level} terminé ! Vous passez au niveau ${level + 1}.`;
+
+        const levelUpOverlay = document.getElementById("level-up-overlay");
+        levelUpOverlay.style.display = "flex";
+
+        setTimeout(() => {
+            levelUpOverlay.style.display = "none";
+            level++;
+        }, 3000);
+
     } else {
-        alert(`Niveau ${level} échoué. Essayez à nouveau.`);
+        // --- NIVEAU ÉCHOUÉ ---
+
+        // (1) Mettre à jour le texte de l’overlay
+        const failText = document.getElementById("level-fail-text");
+        failText.innerText = `Niveau ${level} échoué. Essayez à nouveau !`;
+
+        // (2) Afficher l’overlay
+        const failOverlay = document.getElementById("level-fail-overlay");
+        failOverlay.style.display = "flex";
+
+        // (3) Après, par exemple, 3 secondes, masquer l’overlay
+        setTimeout(() => {
+            failOverlay.style.display = "none";
+            // Remettre le niveau au même si tu veux retenter 
+            // (ou level = 1 si tu veux tout recommencer)
+            // level = 1; 
+        }, 3000);
     }
 
-    // Si on dépasse le nombre de niveaux config
+    // Vérification si on a dépassé le nombre de niveaux
     if (level > Object.keys(levelConfig[selectedElevatorCount]).length) {
         alert("Félicitations ! Vous avez terminé tous les niveaux !");
         level = 1;
     }
 }
+
+
+
 
 function spawnCharacter() {
     const character = new Character();
@@ -488,7 +517,9 @@ function setupElevators() {
 }
 
 function gameLoop() {
+    // Puis dessine le bâtiment et tout le reste
     drawBuilding();
+
     requestAnimationFrame(gameLoop);
 }
 
@@ -548,8 +579,8 @@ canvas.addEventListener('click', function(event) {
     });
 
     if (clickedElevator) {
-        console.log(
-          `Ascenseur ${clickedElevator.id + 1} sélectionné pour aller à l'étage ${targetFloor}`
+        console.log(`
+          Ascenseur ${clickedElevator.id + 1} sélectionné pour aller à l'étage ${targetFloor}`
         );
         clickedElevator.moveToFloor(targetFloor);
         drawBuilding();
@@ -557,6 +588,8 @@ canvas.addEventListener('click', function(event) {
         console.log("Aucun ascenseur sélectionné. Cliquez sur une colonne d'ascenseur.");
     }
 });
+
+
 
 function initGame() {
     console.log("Initialisation du jeu...");
@@ -581,6 +614,57 @@ function initGame() {
 
         console.log(`Nombre d'ascenseurs sélectionné : ${selectedElevatorCount}`);
     });
+    // Paramètres
+    const settingsButton = document.getElementById("settingsButton");
+    const settingsOverlay = document.getElementById("settings-overlay");
+    const themeSelect = document.getElementById("themeSelect");
+    const applySettingsButton = document.getElementById("applySettingsButton");
+    const cancelSettingsButton = document.getElementById("cancelSettingsButton");
+
+    // Ouvrir menu paramètres
+    settingsButton.addEventListener("click", () => {
+        settingsOverlay.style.display = "flex";
+    });
+
+    // Appliquer le thème
+    applySettingsButton.addEventListener("click", () => {
+        const selectedTheme = themeSelect.value; // "default", "retro", "night"
+        document.body.classList.remove("default-theme", "retro-theme", "night-theme");
+        document.body.classList.add(`${selectedTheme}-theme`);
+        // Fermer
+        settingsOverlay.style.display = "none";
+    });
+
+    // Annuler
+    cancelSettingsButton.addEventListener("click", () => {
+        settingsOverlay.style.display = "none";
+    });
+
+    // Afficher le menu « mode de jeu »
+  const modeOverlay = document.getElementById("mode-overlay");
+  modeOverlay.style.display = "flex";
+
+  // Sélection des boutons de mode
+  const soloModeButton = document.getElementById("soloModeButton");
+  const aiModeButton = document.getElementById("aiModeButton");
+  const onlineModeButton = document.getElementById("onlineModeButton");
+
+  // Mode Solo
+  soloModeButton.addEventListener("click", () => {
+    modeOverlay.style.display = "none";
+    document.getElementById("overlay").style.display = "flex";
+  });
+
+  // 1 vs 1 contre l'IA (inactif)
+  aiModeButton.addEventListener("click", () => {
+    alert("Mode 1 vs 1 contre l'IA pas encore implémenté !");
+  });
+
+  // 1 vs 1 en ligne (inactif)
+  onlineModeButton.addEventListener("click", () => {
+    alert("Mode 1 vs 1 en ligne pas encore implémenté !");
+  });
+
 
     drawBuilding();
     requestAnimationFrame(gameLoop);

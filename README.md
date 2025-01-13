@@ -109,5 +109,5 @@ Améliorations pour la prochaine fois :
 - La file des passagers se superpose dans l'autre sens
 - Design un peu
 - NOUVEAUX MODES : 
-        - Match contre l'IA (soit chacun a ses passagers, soit on a les memes et le premier qui le récupère l'a)
+        - Match contre l'IA (soit chacun a ses passagers, soit on a les memes et le premier qui le récupère l'a) avec plusieurs niveaux d'IA (a choisir en les faisant s'affronter)
         - Match 1v1 en ligne (idem)

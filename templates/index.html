@@ -14,6 +14,8 @@
   />
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
   <div id="ui-container">
@@ -22,11 +24,22 @@
     <div id="scoreToPass">Score à atteindre : 0</div>
     <div id="timer">Temps restant : s</div>
     <button id="startButton" disabled>Démarrer le niveau</button>
+    <!-- Bouton Paramètres avec icône roue dentée -->
+    <button id="settingsButton" aria-label="Paramètres">
+      <span class="material-icons">settings</span>
+    </button>
   </div>
+
+
+
 
   <div id="game-container">
     <canvas id="gameCanvas" width="800" height="600"></canvas>
   </div>
+  
+  
+  
+
 
   <!-- Overlay pour sélectionner le nombre d'ascenseurs -->
   <div id="overlay">
@@ -37,6 +50,44 @@
     </div>
   </div>
 
+  <!-- Overlay d'animation de niveau réussi -->
+  <div id="level-up-overlay">
+    <div id="level-up-text">Niveau X terminé !</div>
+  </div>
+  <!-- Overlay d'animation de niveau échoué -->
+  <div id="level-fail-overlay">
+    <div id="level-fail-text">Niveau X échoué !</div>
+  </div>
+
+  <!-- Overlay des paramètres du jeu -->
+  <div id="settings-overlay">
+    <div id="settings-content">
+      <h2>Paramètres</h2>
+      <label for="themeSelect">Thème :</label>
+      <select id="themeSelect">
+        <option value="default">Thème par défaut</option>
+        <option value="retro">Thème rétro</option>
+        <option value="night">Thème nocturne</option>
+      </select>
+
+      <div class="settings-buttons">
+        <button id="applySettingsButton">Appliquer</button>
+        <button id="cancelSettingsButton">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+
+
   <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+  <!-- Overlay de sélection du mode de jeu -->
+  <div id="mode-overlay">
+    <div id="mode-content">
+      <h2>Choisissez votre mode de jeu</h2>
+      <button id="soloModeButton">Solo</button>
+      <button id="aiModeButton">1 vs 1 contre l'IA</button>
+      <button id="onlineModeButton">1 vs 1 en ligne</button>
+    </div>
+  </div>
 </body>
 </html>
