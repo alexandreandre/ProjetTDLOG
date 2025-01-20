@@ -5,9 +5,9 @@ console.log("game.js chargé correctement.");
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-
-// Variables de jeu
+// =================== VARIABLES GLOBALES ===================
 let score = 0;
+let scoreAI = 0; // --- AJOUT pour IA (son propre score)
 let level = 1;
 let timer = 25;
 let timerInterval;
@@ -16,35 +16,38 @@ let gameRunning = false;
 let selectedElevator = null;
 let selectedElevatorCount = 1; // Valeur par défaut
 
+// --- AJOUT pour IA : petit booléen qui indique si on est en mode "1 vs 1 IA"
+let isAIMode = false;
+
 const elevators = [];
 const characters = [];
 
-// Configuration des niveaux avec capacité des ascenseurs et le paramètre floors
+// =================== CONFIGURATIONS DE NIVEAU ===================
 const levelConfig = {
     1: {
         1: { spawnSpeed: 1750, elevatorSpeed: 200, scoreToPass: 70, capacity: 1, floors: 5,
             elevatorColor: "blue", movingElevatorColor: "pink", passengerColor: "blue"
-         },
+        },
         2: { spawnSpeed: 2000, elevatorSpeed: 150, scoreToPass: 100, capacity: 1, floors: 8,
             elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
-         },
+        },
         3: { spawnSpeed: 1400, elevatorSpeed: 50, scoreToPass: 140, capacity: 1, floors: 10,
             elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
-         },
+        },
         4: { spawnSpeed: 1300, elevatorSpeed: 10, scoreToPass: 160, capacity: 1, floors: 10,
-        elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "lime"
+            elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "lime"
         }
     },
-    2: { // Configs pour 2 ascenseurs
+    2: {
         1: { spawnSpeed: 1700, elevatorSpeed: 500, scoreToPass: 50, capacity: 1, floors: 5,
             elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
-         },
+        },
         2: { spawnSpeed: 1700, elevatorSpeed: 400, scoreToPass: 90, capacity: 1, floors: 8,
             elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
-         },
+        },
         3: { spawnSpeed: 2000, elevatorSpeed: 300, scoreToPass: 110, capacity: 1, floors: 10,
             elevatorColor: "gray", movingElevatorColor: "orange", passengerColor: "blue"
-         }
+        }
     },
     3: {
         1: { spawnSpeed: 1300, elevatorSpeed: 160, scoreToPass: 90,  capacity: 2, floors: 10,
@@ -81,7 +84,7 @@ const levelConfig = {
     }
 };
 
-// Fonction utilitaire pour dessiner un rectangle arrondi
+// =================== UTILITAIRE DESSIN RECTANGLE ARRONDI ===================
 function roundRect(ctx, x, y, width, height, radius) {
     ctx.beginPath();
     ctx.moveTo(x + radius, y);
@@ -98,16 +101,80 @@ function roundRect(ctx, x, y, width, height, radius) {
     ctx.stroke();
 }
 
-// Classe Ascenseur
+// =================== CLASSE ASCENSEUR ===================
 class Elevator {
-    constructor(id, capacity) {
+    constructor(id, capacity, isAI = false) { // --- AJOUT paramètre isAI
         this.id = id;
         this.capacity = capacity; 
         this.currentFloor = 0;
         this.destinationFloor = null;
         this.passengers = [];
         this.moving = false;
-        console.log(`Ascenseur ${this.id + 1} initialisé avec une capacité de ${this.capacity}`);
+        this.isAI = isAI; // --- Indique si c'est un ascenseur IA
+        console.log(`Ascenseur ${this.id + 1} initialisé (isAI=${isAI}) avec une capacité de ${this.capacity}`);
+    }
+
+    // -----------------
+    // Méthode appelée dans la boucle gameLoop() si c’est un ascenseur IA
+    // -----------------
+    update() {
+        // IA : si pas en mouvement, on charge les passagers sur l’étage
+        if (!this.moving) {
+            this.loadPassengersOnCurrentFloor();
+        }
+        // Logique auto
+        if (this.isAI) {
+            this.autoMove();
+        }
+    }
+
+    // -----------
+    // Charge tous les passagers présents à l’étage courant
+    // (uniquement si l’ascenseur est à l’arrêt)
+    // -----------
+    loadPassengersOnCurrentFloor() {
+        for (let i = 0; i < characters.length; i++) {
+            const c = characters[i];
+            if (c.currentFloor === this.currentFloor && this.passengers.length < this.capacity) {
+                const loaded = this.loadPassenger(c, true); 
+                if (loaded) {
+                    // On retire ce personnage du tableau global
+                    characters.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+    }
+
+    // -----------
+    // Logique auto : si j'ai un passager, je vais à son étage de destination
+    // sinon je cherche le plus proche passager
+    // -----------
+    autoMove() {
+        if (this.moving) return; // déjà en mouvement => on ne fait rien
+
+        // 1. Si on a au moins un passager à bord => aller déposer le premier
+        if (this.passengers.length > 0) {
+            const nextDest = this.passengers[0].destinationFloor;
+            // console.log(`Ascenseur IA ${this.id+1} transporte un passager vers ${nextDest}`);
+            this.moveToFloor(nextDest);
+            return;
+        }
+
+        // 2. Sinon, on est vide => chercher le passager le plus proche
+        if (characters.length > 0) {
+            const closestPassenger = characters.reduce((closest, passenger) => {
+                if (!closest) return passenger;
+                const distCurrent = Math.abs(passenger.currentFloor - this.currentFloor);
+                const distClosest = Math.abs(closest.currentFloor - this.currentFloor);
+                return distCurrent < distClosest ? passenger : closest;
+            }, null);
+
+            if (closestPassenger) {
+                // console.log(`Ascenseur IA ${this.id+1} va chercher passager à l'étage ${closestPassenger.currentFloor}`);
+                this.moveToFloor(closestPassenger.currentFloor);
+            }
+        }
     }
 
     moveToFloor(floor) {
@@ -122,9 +189,7 @@ class Elevator {
         }
         this.moving = true;
         this.destinationFloor = floor;
-        console.log(`
-          Ascenseur ${this.id + 1} déplacé de l'étage ${this.currentFloor} à l'étage ${floor}`
-        );
+        console.log(`Ascenseur ${this.id + 1} déplacé de l'étage ${this.currentFloor} à l'étage ${floor}`);
 
         const direction = floor > this.currentFloor ? 1 : -1;
         const moveInterval = setInterval(() => {
@@ -139,24 +204,23 @@ class Elevator {
             }
 
             this.currentFloor += direction;
-            console.log(`Ascenseur ${this.id + 1} est maintenant à l'étage ${this.currentFloor}`);
+            // console.log(`Ascenseur ${this.id + 1} est maintenant à l'étage ${this.currentFloor}`);
 
             if (this.currentFloor === floor) {
                 clearInterval(moveInterval);
                 this.moving = false;
                 this.unloadPassengers();
-                this.loadPassengers();
+                this.loadPassengers(); // chargement passagers instantané
             }
             drawBuilding(); // Mettre à jour l'affichage à chaque mouvement
         }, config.elevatorSpeed);
     }
 
+    // On peut passer un petit flag pour distinguer passager IA ou non si on voulait.
     loadPassenger(passenger) {
         if (this.passengers.length < this.capacity) {
             this.passengers.push(passenger);
-            console.log(`
-              Passager embarqué dans l'ascenseur ${this.id + 1} pour l'étage ${passenger.destinationFloor}`
-            );
+            console.log(`Passager embarqué dans ascenseur ${this.id + 1} => destination ${passenger.destinationFloor}`);
             return true;
         }
         console.log(`Ascenseur ${this.id + 1} plein. Passager ne peut pas embarquer.`);
@@ -167,18 +231,23 @@ class Elevator {
         const initialCount = this.passengers.length;
         this.passengers = this.passengers.filter((p) => {
             if (p.destinationFloor === this.currentFloor) {
-                score += 10; // Exemple de score
-                console.log(`Passager déchargé à l'étage ${this.currentFloor}`);
-                return false;
+                // --- SI c'est un ascenseur IA, on incrémente scoreAI, sinon score du joueur
+                if (this.isAI) {
+                    scoreAI += 10;
+                } else {
+                    score += 10;
+                }
+                return false; // on enlève ce passager
             }
             return true;
         });
         const unloaded = initialCount - this.passengers.length;
         if (unloaded > 0) {
-            updateScore();
+            updateScore(); // pour mettre à jour l'UI
         }
     }
 
+    // Appelé quand on arrive à un étage (fin de moveToFloor)
     loadPassengers() {
         for (let i = 0; i < characters.length; i++) {
             let character = characters[i];
@@ -196,72 +265,59 @@ class Elevator {
         // On calcule la hauteur d'un étage
         const floorHeight = canvas.height / config.floors;
         
-        // Au lieu d'un ascenseur fixe (60px), on l'adapte
-        // par exemple 90% de la hauteur de l'étage
-        const elevatorHeight = floorHeight ; 
-        // On peut aussi adapter la largeur selon la capacité
+        const elevatorHeight = floorHeight; 
         const x = 200 + this.id * 180;
         const baseWidth = 80;
         const widthPerCapacity = 20;
         const elevatorWidth = baseWidth + (widthPerCapacity * this.capacity);
 
-        // La position Y dépend de currentFloor
         const y = canvas.height - (this.currentFloor * floorHeight) - elevatorHeight;
 
         // On crée un dégradé vertical
         const grad = ctx.createLinearGradient(x, y, x, y + elevatorHeight);
         if (this.moving) {
-            // Couleurs dégradées si l'ascenseur est en mouvement
             grad.addColorStop(0, "#f5a9f2");
             grad.addColorStop(1, "#d381c3");
         } else {
-            // Couleurs dégradées si l'ascenseur est à l’arrêt
             grad.addColorStop(0, "#70f4ff");
             grad.addColorStop(1, "#2cb3bd");
         }
 
         ctx.fillStyle = grad;
         ctx.strokeStyle = "#fff";
-        ctx.lineWidth = Math.min(8, Math.max(2, floorHeight * 0.03))+1; // On peut laisser 4 ou adapter
+        ctx.lineWidth = Math.min(8, Math.max(2, floorHeight * 0.03)) + 1;
 
-        // Dessin du rectangle arrondi (roundRect)
+        // Dessin du rectangle arrondi
         roundRect(ctx, x, y, elevatorWidth, elevatorHeight, 10);
 
         // Dessin des passagers
         const spacing = elevatorWidth / (this.capacity + 1);
-        
-        // On peut ajuster la taille des passagers
-        const passengerRadius = 2*floorHeight**(1/2); // ex. 1/4 de l'ascenseur
+        const passengerRadius = 2 * floorHeight ** (1/2);
+
         for (let i = 0; i < this.capacity; i++) {
             const passengerX = x + spacing * (i + 1);
-            // Position verticale du passager au centre de l'ascenseur
             const passengerY = y + elevatorHeight / 2;
 
             if (i < this.passengers.length) {
-                // Dessiner un cercle pour le passager, dont la taille dépend de l’ascenseur
                 ctx.beginPath();
                 ctx.arc(passengerX, passengerY, passengerRadius, 0, 2 * Math.PI);
                 ctx.fillStyle = "#ff00d4";
                 ctx.fill();
 
-                // Épaisseur de contour proportionnelle au rayon
-                const dynamicStroke = Math.min(8, Math.max(2, passengerRadius * 0.2))+1;
+                const dynamicStroke = Math.min(8, Math.max(2, passengerRadius * 0.2)) + 1;
                 ctx.lineWidth = dynamicStroke;
                 ctx.strokeStyle = "#ffffff";
                 ctx.stroke();
 
-
-                // Affichage du floor de destination : on adapte aussi la taille de police
                 ctx.fillStyle = "#fff";
                 ctx.textAlign = "center";
                 ctx.font = `bold ${passengerRadius * 1.2}px Arial`;
-                ctx.fillText(`
-                  ${this.passengers[i].destinationFloor}`,
-                  x,
-                  passengerY + (passengerRadius * 0.4)
+                ctx.fillText(
+                    `${this.passengers[i].destinationFloor}`,
+                    passengerX,
+                    passengerY + (passengerRadius * 0.4)
                 );
             } else {
-                // Emplacement vide
                 ctx.beginPath();
                 ctx.arc(passengerX, passengerY, passengerRadius, 0, 2 * Math.PI);
                 ctx.strokeStyle = "#fff";
@@ -269,7 +325,7 @@ class Elevator {
             }
         }
 
-        // Si l’ascenseur est sélectionné, on dessine un contour jaune
+        // Surligner l’ascenseur sélectionné
         if (selectedElevator === this) {
             ctx.strokeStyle = "yellow";
             ctx.lineWidth = 3;
@@ -278,7 +334,7 @@ class Elevator {
     }
 }
 
-
+// =================== CLASSE CHARACTER ===================
 class Character {
     constructor() {
         const config = levelConfig[selectedElevatorCount][level];
@@ -304,46 +360,33 @@ class Character {
         const floorHeight = canvas.height / config.floors;
         const charactersOnSameFloor = Character.getCharactersOnFloor(this.currentFloor);
         const localIndex = charactersOnSameFloor.indexOf(this);
-                // Rayon du personnage : 1/6e de la hauteur d’un étage, par exemple
-        // Ajuste ce ratio à ta convenance (0.1, 0.2, 0.3…)
-        const characterRadius = 2*floorHeight**(1/2); 
 
-        // Position X : on décale chaque personnage sur la même étage pour qu’ils ne se superposent pas
-        // Ici, on part de 80, par exemple, et on recule de 40 pixels par personnage
-        const baseX = 80; 
-        const offsetX = characterRadius + 10; 
+        const characterRadius = 2 * floorHeight ** (1/2);
+        const baseX = 80;
+        const offsetX = characterRadius + 10;
         const x = baseX - localIndex * offsetX;
 
-        // Position Y : on vise le centre de l’étage (this.currentFloor + 0.5)
-        // Ex.: pour l’étage i, la ligne du haut est à i * floorHeight, 
-        // on veut la moitié (0.5) pour se mettre entre la ligne i et i+1
         const y = canvas.height - (this.currentFloor + 0.5) * floorHeight;
-
-
-
 
         ctx.beginPath();
         ctx.arc(x, y, characterRadius, 0, 2 * Math.PI);
         ctx.fillStyle = "#ff00d4";
         ctx.fill();
 
-        // Épaisseur de contour
         const dynamicStroke = Math.min(8, Math.max(2, characterRadius * 0.2)+1);
         ctx.lineWidth = dynamicStroke;
         ctx.strokeStyle = "#fff";
         ctx.stroke();
 
-
-        // Texte : destination floor
-        // On adapte la taille de la police au rayon
+        // Destination du passager
         ctx.fillStyle = "#fff";
         ctx.textAlign = "center";
         ctx.font = `bold ${characterRadius * 1.4}px Arial`; 
-        // Légèrement plus bas que le centre du cercle pour être visible
         ctx.fillText(this.destinationFloor, x, y + (characterRadius * 0.4)+1);
     }
 }
 
+// =================== DEMARRAGE DE NIVEAU ===================
 function startLevel() {
     if (gameRunning) {
         console.log("Le jeu est déjà en cours.");
@@ -361,18 +404,35 @@ function startLevel() {
     console.log(`Niveau ${level} démarré avec ${selectedElevatorCount} ascenseur(s).`);
 }
 
+// =================== RESET DE LA PARTIE POUR LE NIVEAU ===================
 function resetGame(config) {
     score = 0;
+    scoreAI = 0; // --- Réinitialiser le score de l’IA aussi
     characters.length = 0;
     elevators.length = 0;
     selectedElevator = null;
 
-    for (let i = 0; i < selectedElevatorCount; i++) {
-        elevators.push(new Elevator(i, config.capacity));
+    // --- Si isAIMode == true, on veut 2 x selectedElevatorCount ascenseurs
+    // L’utilisateur aura les ascenseurs d’ID 0..(n-1) en mode manuel
+    // L’IA aura les ascenseurs d’ID n..(2n-1) en mode auto
+    if (isAIMode) {
+        // Ascenseurs Joueur
+        for (let i = 0; i < selectedElevatorCount; i++) {
+            elevators.push(new Elevator(i, config.capacity, false /* isAI */));
+        }
+        // Ascenseurs IA
+        for (let i = 0; i < selectedElevatorCount; i++) {
+            // l’ID continue
+            elevators.push(new Elevator(selectedElevatorCount + i, config.capacity, true /* isAI */));
+        }
+    } else {
+        // Mode normal (solo)
+        for (let i = 0; i < selectedElevatorCount; i++) {
+            elevators.push(new Elevator(i, config.capacity, false));
+        }
     }
-    console.log(`
-      ${selectedElevatorCount} ascenseur(s) initialisé(s) avec une capacité de ${config.capacity}`
-    );
+
+    console.log(`${elevators.length} ascenseur(s) initialisé(s).`);
 
     clearInterval(spawnInterval);
     spawnInterval = setInterval(spawnCharacter, config.spawnSpeed);
@@ -380,7 +440,8 @@ function resetGame(config) {
 }
 
 function updateScore() {
-    document.getElementById('score').innerText = `Score: ${score}`;
+    // On peut afficher score ET scoreAI
+    document.getElementById('score').innerText = `Score (Vous): ${score} | Score (IA): ${scoreAI}`;
 }
 
 function updateLevel() {
@@ -388,16 +449,14 @@ function updateLevel() {
 }
 
 function updateUI() {
-    updateScore();     // met à jour le score courant
-    updateLevel();     // met à jour le niveau actuel
+    updateScore();     
+    updateLevel();     
 
-    // Récupérer la config courante
     const config = levelConfig[selectedElevatorCount][level];
-    // Mettre à jour le div #scoreToPass avec la valeur de config.scoreToPass
     document.getElementById('scoreToPass').innerText = `Score à atteindre : ${config.scoreToPass}`;
 }
 
-
+// =================== TIMER ===================
 function startTimer() {
     timer = 25;
     document.getElementById("timer").innerText = `Temps restant : ${timer}s`;
@@ -414,42 +473,30 @@ function startTimer() {
     }, 1000);
 }
 
+// =================== FIN DE PARTIE / CHECK NIVEAU ===================
 function checkLevelCompletion() {
     gameRunning = false;
     document.getElementById("startButton").disabled = false;
 
     const config = levelConfig[selectedElevatorCount][level];
-    if (score >= config.scoreToPass) {
-        // --- NIVEAU RÉUSSI ---
-        const levelUpText = document.getElementById("level-up-text");
-        levelUpText.innerText = `Niveau ${level} terminé ! Vous passez au niveau ${level + 1}.`;
-
-        const levelUpOverlay = document.getElementById("level-up-overlay");
-        levelUpOverlay.style.display = "flex";
-
-        setTimeout(() => {
-            levelUpOverlay.style.display = "none";
+    // Si on est en mode IA, on pourrait comparer score vs scoreAI
+    if (isAIMode) {
+        // Ex.: condition de victoire si le joueur dépasse l’IA ET >= scoreToPass
+        if (score >= config.scoreToPass && score > scoreAI) {
+            victoryOverlay(`Vous avez battu l'IA avec ${score} contre ${scoreAI}! Niveau terminé !`);
             level++;
-        }, 3000);
-
+        } else {
+            failOverlay(`L'IA vous a battu (${scoreAI} contre ${score}), ou vous n'avez pas le score requis (${score}/${config.scoreToPass}).`);
+        }
     } else {
-        // --- NIVEAU ÉCHOUÉ ---
-
-        // (1) Mettre à jour le texte de l’overlay
-        const failText = document.getElementById("level-fail-text");
-        failText.innerText = `Niveau ${level} échoué. Essayez à nouveau !`;
-
-        // (2) Afficher l’overlay
-        const failOverlay = document.getElementById("level-fail-overlay");
-        failOverlay.style.display = "flex";
-
-        // (3) Après, par exemple, 3 secondes, masquer l’overlay
-        setTimeout(() => {
-            failOverlay.style.display = "none";
-            // Remettre le niveau au même si tu veux retenter 
-            // (ou level = 1 si tu veux tout recommencer)
-            // level = 1; 
-        }, 3000);
+        // --- Mode Solo classique
+        if (score >= config.scoreToPass) {
+            // --- NIVEAU RÉUSSI ---
+            victoryOverlay(`Niveau ${level} terminé ! Vous passez au niveau ${level + 1}.`);
+            level++;
+        } else {
+            failOverlay(`Niveau ${level} échoué. Essayez à nouveau !`);
+        }
     }
 
     // Vérification si on a dépassé le nombre de niveaux
@@ -459,28 +506,42 @@ function checkLevelCompletion() {
     }
 }
 
+// ------------------ FONCTIONS OVERLAYS DE VICTOIRE / DEFAITE ------------------
+function victoryOverlay(message) {
+    const levelUpText = document.getElementById("level-up-text");
+    levelUpText.innerText = message;
+    const levelUpOverlay = document.getElementById("level-up-overlay");
+    levelUpOverlay.style.display = "flex";
+    setTimeout(() => {
+        levelUpOverlay.style.display = "none";
+    }, 3000);
+}
 
+function failOverlay(message) {
+    const failText = document.getElementById("level-fail-text");
+    failText.innerText = message;
+    const failOverlay = document.getElementById("level-fail-overlay");
+    failOverlay.style.display = "flex";
+    setTimeout(() => {
+        failOverlay.style.display = "none";
+    }, 3000);
+}
 
-
+// =================== SPAWN DE PASSAGERS ===================
 function spawnCharacter() {
     const character = new Character();
     characters.push(character);
     console.log(`Passager ajouté. Total passagers en attente : ${characters.length}`);
 }
 
+// =================== DESSIN DU BUILDING ===================
 function drawBuilding() {
     const config = levelConfig[selectedElevatorCount][level];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const floorHeight = canvas.height / config.floors;
 
-    // On calcule une taille de police dynamique
-    // Ici, on prend 30% de la hauteur d'un étage, 
-    // mais en s'assurant que la taille ne dépasse pas 32px
-    // ni ne descende en dessous de 8px, pour rester lisible.
     const labelFontSize = Math.min(32, Math.max(8, floorHeight * 0.3));
-
-    // On compose la valeur de font
     ctx.font = `bold ${labelFontSize}px "Press Start 2P"`;
     ctx.textAlign = 'right';
     ctx.strokeStyle = "#888"; 
@@ -490,21 +551,20 @@ function drawBuilding() {
         const y = i * floorHeight;
         const canvasY = canvas.height - y;
 
-        // Tracer la ligne de plancher
         ctx.beginPath();
         ctx.moveTo(0, canvasY);
         ctx.lineTo(canvas.width, canvasY);
         ctx.stroke();
 
-        // Dessiner le numéro de l’étage
         ctx.fillStyle = "#00ffea";
         ctx.fillText(`${i}`, canvas.width - 10, canvasY - 5);
     }
 
-    // Dessin des ascenseurs et des personnages
+    // Dessin des ascenseurs
     elevators.forEach((elevator) => {
         elevator.draw();
     });
+    // Dessin des passagers
     characters.forEach((character) => {
         character.draw();
     });
@@ -512,17 +572,26 @@ function drawBuilding() {
     updateUI();
 }
 
+// =================== PREPARATION DES ASCENSEURS (DESSIN INITIAL) ===================
 function setupElevators() {
     drawBuilding();
 }
 
+// =================== BOUCLE DE JEU ===================
 function gameLoop() {
-    // Puis dessine le bâtiment et tout le reste
+    // Dessiner
     drawBuilding();
+
+    // --- SI on est en mode IA, on appelle update() sur tous les ascenseurs IA
+    // (ou sur tous, mais seuls les ascenseurs IA auront un effet)
+    elevators.forEach(e => {
+        if (e.isAI) e.update();
+    });
 
     requestAnimationFrame(gameLoop);
 }
 
+// =================== EVENT LISTENER SUR LE CANVAS (CLIC) ===================
 canvas.addEventListener('click', function(event) {
     const config = levelConfig[selectedElevatorCount][level];
     const floorHeight = canvas.height / config.floors;
@@ -532,13 +601,20 @@ canvas.addEventListener('click', function(event) {
 
     let clickedElevator = null;
     // Vérifier si clic sur un ascenseur
+    // Remarque : dans le dessin, on fait x = 100 + id*180,
+    // mais pour la détection existante, Alex utilisait x=200 (un petit décalage).
+    // On peut unifier. Ici, je modifie la détection pour coller au x=100.
+    // => On calculera la bounding box en fonction du x=100 + elevator.id*180.
     elevators.forEach(elevator => {
-        const x = 100 + elevator.id * 180; 
+        const x = 200 + elevator.id * 180; 
         const baseWidth = 80;
         const widthPerCapacity = 20;
         const elevatorWidth = baseWidth + (widthPerCapacity * elevator.capacity);
-        const elevatorHeight = 60;
-        const y = canvas.height - (elevator.currentFloor * floorHeight) - elevatorHeight;
+        // On prend la même hauteur qu’au dessin
+        const floorH = canvas.height / config.floors;
+        const elevatorHeight = floorH; 
+        const y = canvas.height - (elevator.currentFloor * floorH) - elevatorHeight;
+
         if (
             clickX >= x &&
             clickX <= x + elevatorWidth &&
@@ -562,7 +638,7 @@ canvas.addEventListener('click', function(event) {
         return;
     }
 
-    // Si on n'a pas cliqué sur l'ascenseur, on détermine l'étage cliqué
+    // Déterminer l'étage cliqué
     const floorNum = Math.floor((canvas.height - clickY) / floorHeight);
     const targetFloor = Math.max(0, Math.min(config.floors - 1, floorNum));
 
@@ -573,24 +649,25 @@ canvas.addEventListener('click', function(event) {
         const baseWidth = 80;
         const widthPerCapacity = 20;
         const elevatorWidth = baseWidth + (widthPerCapacity * elevator.capacity);
+
         if (clickX >= x && clickX <= x + elevatorWidth) {
             clickedElevator = elevator;
         }
     });
 
-    if (clickedElevator) {
-        console.log(`
-          Ascenseur ${clickedElevator.id + 1} sélectionné pour aller à l'étage ${targetFloor}`
-        );
+    if (clickedElevator && !clickedElevator.isAI) {
+        // On déplace seulement si ce n’est PAS un ascenseur IA
+        console.log(`Ascenseur ${clickedElevator.id + 1} sélectionné pour aller à l'étage ${targetFloor}`);
         clickedElevator.moveToFloor(targetFloor);
         drawBuilding();
+    } else if (clickedElevator && clickedElevator.isAI) {
+        console.log("Cet ascenseur est contrôlé par l’IA, vous ne pouvez pas le commander !");
     } else {
         console.log("Aucun ascenseur sélectionné. Cliquez sur une colonne d'ascenseur.");
     }
 });
 
-
-
+// =================== INITIALISATION DU JEU ===================
 function initGame() {
     console.log("Initialisation du jeu...");
     document.getElementById("startButton").addEventListener("click", startLevel);
@@ -614,6 +691,7 @@ function initGame() {
 
         console.log(`Nombre d'ascenseurs sélectionné : ${selectedElevatorCount}`);
     });
+
     // Paramètres
     const settingsButton = document.getElementById("settingsButton");
     const settingsOverlay = document.getElementById("settings-overlay");
@@ -641,33 +719,37 @@ function initGame() {
     });
 
     // Afficher le menu « mode de jeu »
-  const modeOverlay = document.getElementById("mode-overlay");
-  modeOverlay.style.display = "flex";
+    const modeOverlay = document.getElementById("mode-overlay");
+    modeOverlay.style.display = "flex";
 
-  // Sélection des boutons de mode
-  const soloModeButton = document.getElementById("soloModeButton");
-  const aiModeButton = document.getElementById("aiModeButton");
-  const onlineModeButton = document.getElementById("onlineModeButton");
+    // Sélection des boutons de mode
+    const soloModeButton = document.getElementById("soloModeButton");
+    const aiModeButton = document.getElementById("aiModeButton");
+    const onlineModeButton = document.getElementById("onlineModeButton");
 
-  // Mode Solo
-  soloModeButton.addEventListener("click", () => {
-    modeOverlay.style.display = "none";
-    document.getElementById("overlay").style.display = "flex";
-  });
+    // Mode Solo
+    soloModeButton.addEventListener("click", () => {
+        isAIMode = false; // On n’est pas en mode IA
+        modeOverlay.style.display = "none";
+        document.getElementById("overlay").style.display = "flex";
+    });
 
-  // 1 vs 1 contre l'IA (inactif)
-  aiModeButton.addEventListener("click", () => {
-    alert("Mode 1 vs 1 contre l'IA pas encore implémenté !");
-  });
+    // 1 vs 1 contre l'IA
+    aiModeButton.addEventListener("click", () => {
+        isAIMode = true; // On active le mode IA
+        modeOverlay.style.display = "none";
+        document.getElementById("overlay").style.display = "flex";
+    });
+  
+    // 1 vs 1 en ligne (non implémenté)
+    onlineModeButton.addEventListener("click", () => {
+        alert("Mode 1 vs 1 en ligne pas encore implémenté !");
+    });
 
-  // 1 vs 1 en ligne (inactif)
-  onlineModeButton.addEventListener("click", () => {
-    alert("Mode 1 vs 1 en ligne pas encore implémenté !");
-  });
-
-
+    // Démarrage du rendu
     drawBuilding();
     requestAnimationFrame(gameLoop);
+
     console.log("Jeu initialisé.");
 }
 
