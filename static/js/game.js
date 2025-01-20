@@ -468,7 +468,7 @@ function updateScore() {
         // Mode solo
         scoreLine.classList.add('solo-mode'); // Ajoute la classe solo
         scoreLine.innerHTML = `
-            Score : <span id="user-score" style="color: #00ffea;">${score}</span>
+            Score : <span id="user-score" style="color: green;">${score}</span>
         `;
     }
 }
@@ -705,8 +705,13 @@ canvas.addEventListener('click', function(event) {
 // =================== INITIALISATION DU JEU ===================
 function initGame() {
     console.log("Initialisation du jeu...");
-    document.getElementById("startButton").addEventListener("click", startLevel);
-
+    document.getElementById("startButton").addEventListener("click", () => {const bgMusicEl = document.getElementById("bgMusic");
+      if (bgMusicEl && bgMusicEl.muted) {
+            bgMusicEl.muted = false;
+            bgMusicEl.play().catch(err => {console.warn("Toujours bloqué…", err);});
+        }
+      startLevel();
+    });
     // Bouton de confirmation du nombre d'ascenseurs
     const confirmButton = document.getElementById("confirmElevatorCountButton");
     confirmButton.addEventListener("click", () => {

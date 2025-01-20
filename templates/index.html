@@ -18,10 +18,12 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body class="default-theme">
+   <!-- Musique de fond, MUTED par défaut, autoplay en sourdine -->
+   <audio id="bgMusic" src="{{ url_for('static', filename='audio/jazz.mp3') }}" autoplay loop muted preload="auto" style="display: none;"></audio>
   <div id="ui-container">
     <!-- Conteneur des scores -->
     <div id="score-line">
-      Score : <span id="user-score" style="color: #00ffea;">0</span>
+      Score : <span id="user-score" style="color: green;">0</span>
     </div>
     <!-- Élément "espace" -->
     <div class="spacer"></div>
