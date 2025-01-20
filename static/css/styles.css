@@ -4,7 +4,7 @@
   html, body {
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #2a2a72, #009ffd);
+    /*background: linear-gradient(135deg, #2a2a72, #009ffd);*/
     font-family: 'Press Start 2P', Arial, sans-serif;
     color: #fff; /* Couleur de texte par défaut blanche */
     overflow: hidden; /* On évite le scroll */
@@ -16,6 +16,71 @@
     box-sizing: border-box;
 }
 
+/* --------------------------------------------
+   ANIMATION GLOBALE (réutilisée par chaque thème)
+---------------------------------------------*/
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* --------------------------------------------
+   THÈME PAR DÉFAUT (calme, bleuté)
+   Couleurs : bleu profond => bleu gris => bleu clair
+---------------------------------------------*/
+body.default-theme {
+  background: linear-gradient(
+    270deg,
+    #2a2a72,
+    #3d5b99,
+    #009ffd,
+    #2a2a72
+  );
+  background-size: 600% 600%;        /* On “zoome” le gradient pour mieux animer */
+  animation: gradientFlow 12s ease infinite; 
+  color: #fff;
+}
+
+/* --------------------------------------------
+   THÈME RÉTRO (flashy, “arcade”)
+   Couleurs : orange => rose => turquoise => orange
+---------------------------------------------*/
+body.retro-theme {
+  background: linear-gradient(
+    270deg,
+    #ff8c00,
+    #ff00d4,
+    #00ffea,
+    #ff8c00
+  );
+  background-size: 600% 600%;
+  animation: gradientFlow 8s ease infinite; 
+  color: #00ffea;
+}
+
+/* --------------------------------------------
+   THÈME NOCTURNE (sobre, sombre)
+   Couleurs : bleu nuit => violet sombre => indigo foncé
+---------------------------------------------*/
+body.night-theme {
+  background: linear-gradient(
+    270deg,
+    #141e30,
+    #302b63,
+    #1c1240,
+    #141e30
+  );
+  background-size: 600% 600%;
+  animation: gradientFlow 10s ease infinite;
+  color: #cfcfcf;
+}
 
   
   /* -------------------------------------------------
@@ -222,6 +287,65 @@
     opacity: 1;
   }
 }
+
+/* Overlay de confirmation */
+#confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Fond semi-transparent */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999; /* Toujours au-dessus du reste */
+}
+
+/* Contenu de la boîte de dialogue */
+#confirm-content {
+  background: #222;
+  color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+  border: 2px solid #00ffea;
+}
+
+#confirm-content p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+#confirm-content button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#confirmYesButton {
+  background: #d9534f;
+  color: #fff;
+}
+
+#confirmYesButton:hover {
+  background: #c9302c;
+}
+
+#confirmNoButton {
+  background: #5bc0de;
+  color: #fff;
+}
+
+#confirmNoButton:hover {
+  background: #31b0d5;
+}
+
 /************************************************
   OVERLAY SPÉCIAL « FAIL »
 ************************************************/
@@ -261,6 +385,40 @@
   80% { transform: translate(3px, 0); }
   100% { transform: translate(0, 0); }
 }
+
+#homeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; 
+  height: 40px;
+  border: 2px solid #00ffea;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a2a72, #009ffd);
+  box-shadow: 0 0 10px rgba(0, 255, 234, 0.5),
+              0 0 20px rgba(0, 255, 234, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-left: 10px; /* Pour créer un petit espace après le bouton Settings */
+}
+
+#homeButton .material-icons {
+  font-size: 28px;
+  color: #00ffea;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Effet hover */
+#homeButton:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 0 15px rgba(0, 255, 234, 0.8),
+    0 0 30px rgba(0, 255, 234, 0.6);
+}
+#homeButton:hover .material-icons {
+  transform: rotate(10deg); /* Ou autre petit effet */
+}
+
 /************************************************
   OVERLAY « MODE DE JEU »
 ************************************************/
@@ -429,25 +587,7 @@
   transform: scale(1.05);
 }
 
- /* -------- Thème par défaut -------- */
-body.default-theme {
-  background: linear-gradient(135deg, #2a2a72, #009ffd); /* ton fond d’origine */
-  color: #fff; 
-  /* Ajuste si besoin, ou laisse par défaut */
-}
-
-/* -------- Thème rétro (couleurs vives, style arcade) -------- */
-body.retro-theme {
-  background: #ff00d4;  /* un rose flashy, par ex. */
-  color: #00ffea;
-  /* Tu peux ajouter des bordures pixelisées, etc. */
-}
-
-/* -------- Thème nocturne (fond sombre, éléments contrastés) -------- */
-body.night-theme {
-  background: #111;  /* fond très sombre */
-  color: #cfcfcf;    /* texte gris clair */
-  /* etc. */
+ 
 
 
   /* -------------------------------------------------

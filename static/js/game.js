@@ -18,6 +18,8 @@ let selectedElevatorCount = 1; // Valeur par défaut
 
 // --- AJOUT pour IA : petit booléen qui indique si on est en mode "1 vs 1 IA"
 let isAIMode = false;
+let aiDecisionDelay = 0; // En millisecondes, 0 par défaut (difficile)
+
 
 const elevators = [];
 const characters = [];
@@ -25,7 +27,7 @@ const characters = [];
 // =================== CONFIGURATIONS DE NIVEAU ===================
 const levelConfig = {
     1: {
-        1: { spawnSpeed: 1750, elevatorSpeed: 200, scoreToPass: 70, capacity: 1, floors: 5,
+        1: { spawnSpeed: 1300, elevatorSpeed: 200, scoreToPass: 70, capacity: 1, floors: 5,
             elevatorColor: "blue", movingElevatorColor: "pink", passengerColor: "blue"
         },
         2: { spawnSpeed: 2000, elevatorSpeed: 150, scoreToPass: 100, capacity: 1, floors: 8,
@@ -111,6 +113,7 @@ class Elevator {
         this.passengers = [];
         this.moving = false;
         this.isAI = isAI; // --- Indique si c'est un ascenseur IA
+        this.nextDecisionTime = 0;
         console.log(`Ascenseur ${this.id + 1} initialisé (isAI=${isAI}) avec une capacité de ${this.capacity}`);
     }
 
@@ -153,15 +156,22 @@ class Elevator {
     autoMove() {
         if (this.moving) return; // déjà en mouvement => on ne fait rien
 
-        // 1. Si on a au moins un passager à bord => aller déposer le premier
-        if (this.passengers.length > 0) {
-            const nextDest = this.passengers[0].destinationFloor;
-            // console.log(`Ascenseur IA ${this.id+1} transporte un passager vers ${nextDest}`);
-            this.moveToFloor(nextDest);
+         // Vérifier le délai IA
+        if (Date.now() < this.nextDecisionTime) {
+            // Pas encore le moment de reprendre une décision
             return;
         }
 
-        // 2. Sinon, on est vide => chercher le passager le plus proche
+        // 1. Si on a des passagers, on va les déposer
+        if (this.passengers.length > 0) {
+            const nextDest = this.passengers[0].destinationFloor;
+            this.moveToFloor(nextDest);
+            // On fixe le prochain moment où l’IA pourra redécider
+            this.nextDecisionTime = Date.now() + aiDecisionDelay;
+            return;
+        }
+
+       // 2. Sinon, on cherche le passager le plus proche
         if (characters.length > 0) {
             const closestPassenger = characters.reduce((closest, passenger) => {
                 if (!closest) return passenger;
@@ -171,8 +181,8 @@ class Elevator {
             }, null);
 
             if (closestPassenger) {
-                // console.log(`Ascenseur IA ${this.id+1} va chercher passager à l'étage ${closestPassenger.currentFloor}`);
                 this.moveToFloor(closestPassenger.currentFloor);
+                this.nextDecisionTime = Date.now() + aiDecisionDelay;
             }
         }
     }
@@ -418,19 +428,22 @@ function resetGame(config) {
     if (isAIMode) {
         // Ascenseurs Joueur
         for (let i = 0; i < selectedElevatorCount; i++) {
-            elevators.push(new Elevator(i, config.capacity, false /* isAI */));
+            elevators.push(new Elevator(i, config.capacity, false));
         }
         // Ascenseurs IA
         for (let i = 0; i < selectedElevatorCount; i++) {
-            // l’ID continue
-            elevators.push(new Elevator(selectedElevatorCount + i, config.capacity, true /* isAI */));
+            const eAI = new Elevator(selectedElevatorCount + i, config.capacity, true);
+            // Empêcher la première décision instantanée
+            eAI.nextDecisionTime = Date.now() + aiDecisionDelay;
+            elevators.push(eAI);
         }
     } else {
-        // Mode normal (solo)
+        // Mode normal (solo) : pas d’IA => pas de nextDecisionTime à ajuster
         for (let i = 0; i < selectedElevatorCount; i++) {
             elevators.push(new Elevator(i, config.capacity, false));
         }
     }
+    
 
     console.log(`${elevators.length} ascenseur(s) initialisé(s).`);
 
@@ -440,9 +453,13 @@ function resetGame(config) {
 }
 
 function updateScore() {
-    // On peut afficher score ET scoreAI
-    document.getElementById('score').innerText = `Score (Vous): ${score} | Score (IA): ${scoreAI}`;
+    if (isAIMode) {
+        document.getElementById('score').innerText = `Score : ${score} | Score de l'IA: ${scoreAI}`;
+    } else {
+        document.getElementById('score').innerText = `Score: ${score}`;
+    }
 }
+
 
 function updateLevel() {
     document.getElementById('level').innerText = `Niveau: ${level}`;
@@ -692,6 +709,77 @@ function initGame() {
         console.log(`Nombre d'ascenseurs sélectionné : ${selectedElevatorCount}`);
     });
 
+    // Bouton Home
+const homeButton = document.getElementById("homeButton");
+const confirmOverlay = document.getElementById("confirm-overlay");
+const confirmYesButton = document.getElementById("confirmYesButton");
+const confirmNoButton = document.getElementById("confirmNoButton");
+
+homeButton.addEventListener("click", () => {
+    if (gameRunning) {
+        // Si une partie est en cours, afficher l'overlay de confirmation
+        confirmOverlay.style.display = "flex";
+    } else {
+        // Sinon, retour à l'accueil directement
+        returnToHome();
+    }
+});
+
+// Bouton "Oui" dans la confirmation
+confirmYesButton.addEventListener("click", () => {
+    // Fermer l'overlay de confirmation
+    confirmOverlay.style.display = "none";
+
+    // Retourner à l'écran d'accueil
+    returnToHome();
+});
+
+// Bouton "Non" dans la confirmation
+confirmNoButton.addEventListener("click", () => {
+    // Fermer l'overlay de confirmation et continuer la partie
+    confirmOverlay.style.display = "none";
+});
+
+// Fonction pour retourner à l'accueil (arrête la partie)
+function returnToHome() {
+    // 1. Arrêter la partie
+    clearInterval(timerInterval);
+    clearInterval(spawnInterval);
+    gameRunning = false;
+
+    // 2. Réinitialiser les scores
+    score = 0;
+    scoreAI = 0;
+    updateScore();
+
+    // 3. Réinitialiser les ascenseurs et passagers
+    elevators.length = 0;
+    characters.length = 0;
+    const config = levelConfig[selectedElevatorCount][level];
+    for (let i = 0; i < selectedElevatorCount; i++) {
+        elevators.push(new Elevator(i, config.capacity, false));
+    }
+
+    // 4. Redessiner le bâtiment à son état initial
+    drawBuilding();
+
+    // 5. Masquer tous les overlays de jeu
+    document.getElementById("overlay").style.display = "none";
+
+    // 6. Afficher à nouveau l'overlay de choix du mode
+    const modeOverlay = document.getElementById("mode-overlay");
+    modeOverlay.style.display = "flex";
+
+    // 7. Désactiver le bouton "Démarrer"
+    document.getElementById("startButton").disabled = true;
+
+    console.log("Retour à l'écran d'accueil : partie arrêtée, jeu réinitialisé.");
+}
+
+
+
+    
+
     // Paramètres
     const settingsButton = document.getElementById("settingsButton");
     const settingsOverlay = document.getElementById("settings-overlay");
@@ -739,7 +827,48 @@ function initGame() {
         isAIMode = true; // On active le mode IA
         modeOverlay.style.display = "none";
         document.getElementById("overlay").style.display = "flex";
+        // NOUVEAU : Afficher la sélection de difficulté IA
+        document.getElementById("aiDifficultyContainer").style.display = "block";
+        // Optionnel : on peut masquer le bouton "Confirmer" si on veut obliger le joueur
+        // à cliquer sur Facile/Moyen/Difficile pour lancer la partie
+        document.getElementById("confirmElevatorCountButton").style.display = "none";
     });
+    // Boutons de difficulté IA
+    const easyBtn = document.getElementById("easyAIModeButton");
+    const mediumBtn = document.getElementById("mediumAIModeButton");
+    const hardBtn = document.getElementById("hardAIModeButton");
+
+    // Fonction qui lit le nombre d'ascenseurs et lance le niveau
+    function setAIDifficulty(difficultyDelay) {
+        // 1) Fixer le délai de décision de l’IA
+        aiDecisionDelay = difficultyDelay;
+    
+        // 2) Lire la valeur du nombre d'ascenseurs
+        const elevatorInput = document.getElementById("elevatorCountInput");
+        const val = parseInt(elevatorInput.value, 10);
+        if (!isNaN(val) && val >= 1) {
+            selectedElevatorCount = val;
+        } else {
+            selectedElevatorCount = 1;
+        }
+    
+        // 3) Masquer l’overlay et activer le bouton "Démarrer le niveau"
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("startButton").disabled = false;
+    
+        // IMPORTANT : on ne lance PAS startLevel() ici.
+    }
+
+    easyBtn.addEventListener("click", () => {
+        setAIDifficulty(2000); // 2s
+    });
+    mediumBtn.addEventListener("click", () => {
+        setAIDifficulty(1000); // 1s
+    });
+    hardBtn.addEventListener("click", () => {
+        setAIDifficulty(0); // 0s
+    });
+    
   
     // 1 vs 1 en ligne (non implémenté)
     onlineModeButton.addEventListener("click", () => {
