@@ -453,12 +453,30 @@ function resetGame(config) {
 }
 
 function updateScore() {
+    const scoreLine = document.getElementById('score-line');
+
+    if (!scoreLine) {
+        console.error("L'élément #score-line est introuvable.");
+        return;
+    }
+
     if (isAIMode) {
-        document.getElementById('score').innerText = `Score : ${score} | Score de l'IA: ${scoreAI}`;
+        // Mode 1v1 IA
+        scoreLine.classList.remove('solo-mode'); // Supprime la classe solo
+        scoreLine.innerHTML = `<span id="user-score" style="color: green;">${score}</span>-<span id="ia-score" style="color: red;">${scoreAI}</span>`;
     } else {
-        document.getElementById('score').innerText = `Score: ${score}`;
+        // Mode solo
+        scoreLine.classList.add('solo-mode'); // Ajoute la classe solo
+        scoreLine.innerHTML = `
+            Score : <span id="user-score" style="color: #00ffea;">${score}</span>
+        `;
     }
 }
+
+
+
+
+
 
 
 function updateLevel() {
@@ -470,7 +488,7 @@ function updateUI() {
     updateLevel();     
 
     const config = levelConfig[selectedElevatorCount][level];
-    document.getElementById('scoreToPass').innerText = `Score à atteindre : ${config.scoreToPass}`;
+    document.getElementById('scoreToPass').innerText = `À atteindre : ${config.scoreToPass}`;
 }
 
 // =================== TIMER ===================

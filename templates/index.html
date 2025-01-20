@@ -19,20 +19,27 @@
 </head>
 <body class="default-theme">
   <div id="ui-container">
-    <div id="score">Score: 0</div>
+    <!-- Conteneur des scores -->
+    <div id="score-line">
+      Score : <span id="user-score" style="color: #00ffea;">0</span>
+    </div>
+    <!-- Élément "espace" -->
+    <div class="spacer"></div>
     <div id="level">Niveau: 1</div>
-    <div id="scoreToPass">Score à atteindre : 0</div>
+    <div id="scoreToPass">À atteindre : 0</div>
     <div id="timer">Temps restant : s</div>
     <button id="startButton" disabled>Démarrer le niveau</button>
     <!-- Bouton Paramètres avec icône roue dentée -->
     <button id="settingsButton" aria-label="Paramètres">
       <span class="material-icons">settings</span>
     </button>
-    <!-- Nouveau bouton HOME -->
-  <button id="homeButton" aria-label="Accueil">
-    <span class="material-icons">home</span>
-  </button>
+
+      <!-- Nouveau bouton HOME -->
+    <button id="homeButton" aria-label="Accueil">
+      <span class="material-icons">home</span>
+    </button>
   </div>
+  
 
   <!-- Overlay de confirmation pour quitter la partie -->
   <div id="confirm-overlay" style="display: none;">

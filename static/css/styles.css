@@ -96,6 +96,42 @@ body.night-theme {
     border-radius: 8px;
     background: #2b2b2b;
   }
+  #score-line {
+    white-space: nowrap; /* Empêche les retours à la ligne automatiques */
+    overflow: hidden; /* Cache tout dépassement (optionnel si le texte est trop long) */
+    text-overflow: clip; /* Ajoute "..." si le texte dépasse la largeur (optionnel) */
+    font-size: 16px;
+    text-align: center; /* Centre le texte dans le conteneur */
+    margin: 10px 100px 10px 0; /* Ajoute 20px d'espace à droite */
+    color: #00ffea; /* Texte turquoise */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); /* Ombre légère */
+  }
+  /* Mode solo : autoriser les retours à la ligne */
+  #score-line.solo-mode {
+    white-space: normal; /* Autorise les retours à la ligne */
+    word-wrap: break-word; /* Coupe les mots si nécessaire */
+    text-align: center; /* Centre le texte dans le conteneur */
+  }
+  #score-line.solo-mode #user-score {
+    color: #00ffea; /* Bleu turquoise */
+    font-weight: bold;
+  }
+  #user-score {
+    color: green; /* Score utilisateur en vert */
+    font-weight: bold;
+  }
+  
+  #ia-score {
+    color: red; /* Score IA en rouge */
+    font-weight: bold;
+  }
+  
+  
+  
+  
+
+
+
   
   /* -------------------------------------------------
      LE CANVAS
@@ -114,14 +150,15 @@ body.night-theme {
      INTERFACE UTILISATEUR (SCORE, LEVEL, TIMER)
      ------------------------------------------------- */
   #ui-container {
-    width: 800px; /* Conserve la largeur */
+    width: 100%;
+    max-width: 1100px; /* Conserve la largeur */
     margin: 0 auto 10px auto; /* Centré horizontalement */
     display: flex;
     justify-content: space-between; /* Aligne les items avec un espacement équilibré */
     align-items: center; /* Aligne verticalement au centre */
     gap: 10px; /* Contrôle directement l'espacement entre les items */
     background: rgba(0, 0, 0, 0.6); /* Fond semi-transparent */
-    padding: 8px 12px; /* Ajuste les espacements internes */
+    padding: 15px 12px; /* Ajuste les espacements internes */
     border-radius: 8px; /* Coins arrondis */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Ombre */
   }
@@ -601,4 +638,3 @@ body.night-theme {
     color: #00ffea;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
   }
-}
