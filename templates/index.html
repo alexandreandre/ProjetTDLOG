@@ -1,125 +1,183 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jeu de Gestion d’Ascenseurs</title>
-  
-  <!-- Google Fonts (ex. Press Start 2P) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
-    rel="stylesheet"
-  />
+<!--! \file index.html
+     \brief Page principale de l’application “Jeu de Gestion d’Ascenseurs”.
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+     Cette page inclut :
+       - La musique de fond (jazz.mp3) lancée en sourdine
+       - Le conteneur d’interface (score, niveau, timer, etc.)
+       - Un canvas pour l’affichage du jeu
+       - Plusieurs overlays (pour confirmer l’arrêt de partie,
+         sélectionner le mode de jeu, choisir la difficulté IA, etc.)
+ -->
 
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
-<body class="default-theme">
-   <!-- Musique de fond, MUTED par défaut, autoplay en sourdine -->
-   <audio id="bgMusic" src="{{ url_for('static', filename='audio/jazz.mp3') }}" autoplay loop muted preload="auto" style="display: none;"></audio>
-  <div id="ui-container">
-    <!-- Conteneur des scores -->
-    <div id="score-line">
-      Score : <span id="user-score" style="color: green;">0</span>
-    </div>
-    <!-- Élément "espace" -->
-    <div class="spacer"></div>
-    <div id="level">Niveau: 1</div>
-    <div id="scoreToPass">À atteindre : 0</div>
-    <div id="timer">Temps restant : s</div>
-    <button id="startButton" disabled>Démarrer le niveau</button>
-    <!-- Bouton Paramètres avec icône roue dentée -->
-    <button id="settingsButton" aria-label="Paramètres">
-      <span class="material-icons">settings</span>
-    </button>
-
-      <!-- Nouveau bouton HOME -->
-    <button id="homeButton" aria-label="Accueil">
-      <span class="material-icons">home</span>
-    </button>
-  </div>
-  
-
-  <!-- Overlay de confirmation pour quitter la partie -->
-  <div id="confirm-overlay" style="display: none;">
-    <div id="confirm-content">
-      <p>Êtes-vous sûr de vouloir arrêter la partie ?</p>
-      <button id="confirmYesButton">Oui</button>
-      <button id="confirmNoButton">Non</button>
-    </div>
-  </div>
-
-
-
-
-  <div id="game-container">
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-  </div>
-  
-  
-
-
- <!-- Overlay pour sélectionner le nombre d'ascenseurs -->
-  <div id="overlay">
-    <div id="overlay-content">
-      <h2>Choisissez le nombre d'ascenseurs</h2>
-      <input id="elevatorCountInput" type="number" min="1" max="5" value="1" />
-      <button id="confirmElevatorCountButton">Confirmer</button>
-
-      <!-- NOUVEAU : Sélection de la difficulté IA (caché par défaut) -->
-      <div id="aiDifficultyContainer" style="display: none; margin-top: 20px;">
-        <h3 style="color: #00ffea; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-          Choisissez la difficulté de l'IA
-        </h3>
-        <button id="easyAIModeButton">Facile</button>
-        <button id="mediumAIModeButton">Moyen</button>
-        <button id="hardAIModeButton">Difficile</button>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- Overlay d'animation de niveau réussi -->
-  <div id="level-up-overlay">
-    <div id="level-up-text">Niveau X terminé !</div>
-  </div>
-  <!-- Overlay d'animation de niveau échoué -->
-  <div id="level-fail-overlay">
-    <div id="level-fail-text">Niveau X échoué !</div>
-  </div>
-
-  <!-- Overlay des paramètres du jeu -->
-  <div id="settings-overlay">
-    <div id="settings-content">
-      <h2>Paramètres</h2>
-      <label for="themeSelect">Thème :</label>
-      <select id="themeSelect">
-        <option value="default">Thème par défaut</option>
-        <option value="retro">Thème rétro</option>
-        <option value="night">Thème nocturne</option>
-      </select>
-
-      <div class="settings-buttons">
-        <button id="applySettingsButton">Appliquer</button>
-        <button id="cancelSettingsButton">Annuler</button>
-      </div>
-    </div>
-  </div>
-
-
-
-  <script src="{{ url_for('static', filename='js/game.js') }}"></script>
-  <!-- Overlay de sélection du mode de jeu -->
-  <div id="mode-overlay">
-    <div id="mode-content">
-      <h2>Choisissez votre mode de jeu</h2>
-      <button id="soloModeButton">Solo</button>
-      <button id="aiModeButton">1 vs 1 contre l'IA</button>
-      <button id="onlineModeButton">1 vs 1 en ligne</button>
-    </div>
-  </div>
-</body>
-</html>
+ <!DOCTYPE html>
+ <html lang="fr">
+ <head>
+   <!--! \brief Configure l’encodage en UTF-8 et le viewport responsive -->
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+ 
+   <!--! \brief Titre de la page (affiché dans l’onglet du navigateur) -->
+   <title>Jeu de Gestion d’Ascenseurs</title>
+   
+   <!--! \brief Google Fonts : import de la police “Press Start 2P” -->
+   <link rel="preconnect" href="https://fonts.googleapis.com" />
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+   <link
+     href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+     rel="stylesheet"
+   />
+ 
+   <!--! \brief Inclusion de la feuille de style principale -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+ 
+   <!--! \brief Icônes Material (pour les boutons “settings”, “home”, etc.) -->
+   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+ </head>
+ <body class="default-theme"><!--! \brief La classe "default-theme" applique le dégradé bleuté -->
+ 
+   <!--
+     \brief Musique de fond “jazz.mp3”
+     - Autoplay + muted => l’autoplay est autorisé
+     - loop => la piste se rejoue en continu
+     - display:none => on ne montre pas le player
+   -->
+   <audio
+     id="bgMusic"
+     src="{{ url_for('static', filename='audio/jazz.mp3') }}"
+     autoplay
+     loop
+     muted
+     preload="auto"
+     style="display: none;"
+   ></audio>
+ 
+   <!--! \brief Barre supérieure : score, timer, etc. -->
+   <div id="ui-container">
+     <!--! \brief Affichage principal du score (score-line) -->
+     <div id="score-line">
+       Score : <span id="user-score" style="color: green;">0</span>
+     </div>
+ 
+     <!--! \brief Un “spacer” pour séparer score des autres éléments -->
+     <div class="spacer"></div>
+ 
+     <!--! \brief Indications de niveau, score à atteindre, temps restant -->
+     <div id="level">Niveau: 1</div>
+     <div id="scoreToPass">À atteindre : 0</div>
+     <div id="timer">Temps restant : s</div>
+ 
+     <!--! \brief Bouton “Démarrer le niveau” (désactivé par défaut) -->
+     <button id="startButton" disabled>Démarrer le niveau</button>
+ 
+     <!--! \brief Bouton Paramètres (roue dentée) -->
+     <button id="settingsButton" aria-label="Paramètres">
+       <span class="material-icons">settings</span>
+     </button>
+ 
+     <!--! \brief Bouton HOME (retour) -->
+     <button id="homeButton" aria-label="Accueil">
+       <span class="material-icons">home</span>
+     </button>
+   </div>
+   
+   <!--
+     \brief Overlay de confirmation (arrêt de partie)
+     - S’affiche si le joueur clique sur “Home” pendant une partie
+   -->
+   <div id="confirm-overlay" style="display: none;">
+     <div id="confirm-content">
+       <p>Êtes-vous sûr de vouloir arrêter la partie ?</p>
+       <button id="confirmYesButton">Oui</button>
+       <button id="confirmNoButton">Non</button>
+     </div>
+   </div>
+ 
+   <!--! \brief Conteneur principal du canvas (zone de jeu) -->
+   <div id="game-container">
+     <canvas id="gameCanvas" width="800" height="600"></canvas>
+   </div>
+ 
+   <!--
+     \brief Overlay pour choisir le nombre d’ascenseurs
+     (et éventuellement la difficulté IA)
+   -->
+   <div id="overlay">
+     <div id="overlay-content">
+       <h2>Choisissez le nombre d'ascenseurs</h2>
+       <input id="elevatorCountInput" type="number" min="1" max="5" value="1" />
+       <button id="confirmElevatorCountButton">Confirmer</button>
+ 
+       <!--
+         \brief Zone de sélection de la difficulté IA (cachée par défaut)
+         - Facile / Moyen / Difficile
+       -->
+       <div id="aiDifficultyContainer" style="display: none; margin-top: 20px;">
+         <h3 style="color: #00ffea; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+           Choisissez la difficulté de l'IA
+         </h3>
+         <button id="easyAIModeButton">Facile</button>
+         <button id="mediumAIModeButton">Moyen</button>
+         <button id="hardAIModeButton">Difficile</button>
+       </div>
+     </div>
+   </div>
+ 
+   <!--
+     \brief Overlay “niveau réussi”
+     - Affiché quand le score dépasse le scoreToPass
+   -->
+   <div id="level-up-overlay">
+     <div id="level-up-text">Niveau X terminé !</div>
+   </div>
+ 
+   <!--
+     \brief Overlay “niveau échoué”
+     - Affiché quand le joueur n’atteint pas le score requis avant la fin du temps
+   -->
+   <div id="level-fail-overlay">
+     <div id="level-fail-text">Niveau X échoué !</div>
+   </div>
+ 
+   <!--
+     \brief Overlay des paramètres (sélecteur de thème)
+     - S’ouvre via le bouton #settingsButton
+   -->
+   <div id="settings-overlay">
+     <div id="settings-content">
+       <h2>Paramètres</h2>
+       <label for="themeSelect">Thème :</label>
+       <select id="themeSelect">
+         <option value="default">Thème par défaut</option>
+         <option value="retro">Thème rétro</option>
+         <option value="night">Thème nocturne</option>
+       </select>
+ 
+       <div class="settings-buttons">
+         <button id="applySettingsButton">Appliquer</button>
+         <button id="cancelSettingsButton">Annuler</button>
+       </div>
+     </div>
+   </div>
+ 
+   <!--
+     \brief Inclusion du script principal
+     - Gère la logique du jeu, les ascenseurs, le timer, etc.
+   -->
+   <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+ 
+   <!--
+     \brief Overlay de sélection du mode de jeu (Solo / IA / En ligne)
+     - Affiché dès qu’on arrive sur la page
+   -->
+   <div id="mode-overlay">
+     <div id="mode-content">
+       <h2>Choisissez votre mode de jeu</h2>
+       <button id="soloModeButton">Solo</button>
+       <button id="aiModeButton">1 vs 1 contre l'IA</button>
+       <button id="onlineModeButton">1 vs 1 en ligne</button>
+     </div>
+   </div>
+ 
+ </body>
+ </html>
+ 

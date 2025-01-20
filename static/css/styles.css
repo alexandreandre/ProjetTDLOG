@@ -1,40 +1,50 @@
-/* -------------------------------------------------
-   STYLE GLOBAL
-   ------------------------------------------------- */
-  html, body {
-    margin: 0;
-    padding: 0;
-    /*background: linear-gradient(135deg, #2a2a72, #009ffd);*/
-    font-family: 'Press Start 2P', Arial, sans-serif;
-    color: #fff; /* Couleur de texte par défaut blanche */
-    overflow: hidden; /* On évite le scroll */
-}
-  
-  body {
-    /* Petit offset en haut, si besoin */
-    padding: 20px;
-    box-sizing: border-box;
+/**
+ * \file styles.css
+ * \brief Feuille de style principale pour le jeu d’ascenseurs.
+ *
+ * Gère :
+ *  - Les thèmes (dégradés animés : default, retro, night)
+ *  - L’affichage du conteneur (#game-container), du canvas
+ *  - Les overlays de niveau réussi/échoué, paramètres…
+ *  - Le layout de l’interface (#ui-container) et des boutons (start, home, etc.)
+ */
+
+/**
+ * \brief Réglages généraux :
+ *  - Supprime marges/paddings
+ *  - Définit la police rétro (Press Start 2P)
+ *  - Couleur de texte #fff et overflow hidden pour bloquer le scroll
+ */
+ html, body {
+  margin: 0;
+  padding: 0;
+  /* background: linear-gradient(135deg, #2a2a72, #009ffd); */
+  font-family: 'Press Start 2P', Arial, sans-serif;
+  color: #fff;
+  overflow: hidden;
 }
 
-/* --------------------------------------------
-   ANIMATION GLOBALE (réutilisée par chaque thème)
----------------------------------------------*/
+body {
+  /* Offset en haut si besoin */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/**
+ * \brief Animation du gradientFlow
+ * Déplace la position du background pour créer un effet
+ * de dégradé qui “circule”
+ */
 @keyframes gradientFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* --------------------------------------------
-   THÈME PAR DÉFAUT (calme, bleuté)
-   Couleurs : bleu profond => bleu gris => bleu clair
----------------------------------------------*/
+/**
+ * \brief Thème par défaut (bleu)
+ * Couleurs : bleu profond -> gris-bleu -> bleu clair
+ */
 body.default-theme {
   background: linear-gradient(
     270deg,
@@ -43,15 +53,16 @@ body.default-theme {
     #009ffd,
     #2a2a72
   );
-  background-size: 600% 600%;        /* On “zoome” le gradient pour mieux animer */
+  background-size: 600% 600%;
   animation: gradientFlow 12s ease infinite; 
   color: #fff;
 }
 
-/* --------------------------------------------
-   THÈME RÉTRO (flashy, “arcade”)
-   Couleurs : orange => rose => turquoise => orange
----------------------------------------------*/
+/**
+ * \brief Thème rétro (flashy)
+ * Couleurs : orange -> rose -> turquoise
+ * animation : 8s plus rapide
+ */
 body.retro-theme {
   background: linear-gradient(
     270deg,
@@ -65,10 +76,11 @@ body.retro-theme {
   color: #00ffea;
 }
 
-/* --------------------------------------------
-   THÈME NOCTURNE (sobre, sombre)
-   Couleurs : bleu nuit => violet sombre => indigo foncé
----------------------------------------------*/
+/**
+ * \brief Thème nocturne (sombre)
+ * Couleurs : bleu nuit -> violet -> indigo
+ * animation : 10s intermédiaire
+ */
 body.night-theme {
   background: linear-gradient(
     270deg,
@@ -82,224 +94,221 @@ body.night-theme {
   color: #cfcfcf;
 }
 
-  
-  /* -------------------------------------------------
-     CONTENEUR DU JEU
-     ------------------------------------------------- */
-  #game-container {
-    position: relative;
-    width: 800px;
-    height: 600px;
-    margin: 0 auto;
-    border: 2px solid #000;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    border-radius: 8px;
-    background: #2b2b2b;
-  }
-  #score-line {
-    position: relative; /* Nécessaire pour utiliser transform */
-    transform: translateX(20px); /* Décale le score de 20px vers la droite */
-    min-width: 160px;
-    flex-grow: 2;
-    white-space: nowrap; /* Empêche les retours à la ligne automatiques */
-    overflow: hidden; /* Cache tout dépassement (optionnel si le texte est trop long) */
-    text-overflow: clip; /* Ajoute "..." si le texte dépasse la largeur (optionnel) */
-    font-size: 20px;
-    text-align: center; /* Centre le texte dans le conteneur */
-    margin: 10px 100px 10px 0; /* Ajoute 20px d'espace à droite */
-    color: #00ffea; /* Texte turquoise */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); /* Ombre légère */
-  }
-  /* Mode solo : autoriser les retours à la ligne */
-  #score-line.solo-mode {
-    white-space: normal; /* Autorise les retours à la ligne */
-    word-wrap: break-word; /* Coupe les mots si nécessaire */
-    text-align: center; /* Centre le texte dans le conteneur */
-  }
+/**
+ * \brief Conteneur principal du jeu (800x600)
+ * - Encadré, ombré, fond sombre #2b2b2b
+ */
+#game-container {
+  position: relative;
+  width: 800px;
+  height: 600px;
+  margin: 0 auto;
+  border: 2px solid #000;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  border-radius: 8px;
+  background: #2b2b2b;
+}
 
-  #user-score {
-    font-size: 28px; /* Taille des chiffres */
-    color: green; /* Score utilisateur en vert */
-    font-weight: bold;
-  }
-  
-  #ia-score {
-    font-size: 28px; /* Taille des chiffres */
-    color: red; /* Score IA en rouge */
-    font-weight: bold;
-  }
-  
-  
-  
-  
+/**
+ * \brief Zone d’affichage du score, décalée par transform
+ * - grossit la police, couleur turquoise
+ * - dans le mode solo, autorise le retour à la ligne
+ */
+#score-line {
+  position: relative;
+  transform: translateX(20px);
+  min-width: 160px;
+  flex-grow: 2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  font-size: 20px;
+  text-align: center;
+  margin: 10px 100px 10px 0;
+  color: #00ffea;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+#score-line.solo-mode {
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: center;
+}
 
+/** Scores utilisateur (#user-score) et IA (#ia-score) */
+#user-score {
+  font-size: 28px;
+  color: green;
+  font-weight: bold;
+}
+#ia-score {
+  font-size: 28px;
+  color: red;
+  font-weight: bold;
+}
 
+/**
+ * \brief Le canvas : zone de dessin
+ *  - Fond #202020
+ *  - Bordure turquoise
+ *  - Ombre intérieure “inset”
+ */
+#gameCanvas {
+  display: block;
+  background: #202020;
+  border: 3px solid #00ffea;
+  border-radius: 8px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+  margin: 0 auto;
+}
 
-  
-  /* -------------------------------------------------
-     LE CANVAS
-     ------------------------------------------------- */
-  #gameCanvas {
-    display: block;
-    /* Fond sombre ou un dégradé plus subtil */
-    background: #202020;
-    border: 3px solid #00ffea;
-    border-radius: 8px;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-    margin: 0 auto;
-  }
-  
-  /* -------------------------------------------------
-     INTERFACE UTILISATEUR (SCORE, LEVEL, TIMER)
-     ------------------------------------------------- */
-  #ui-container {
-    width: 100%;
-    max-width: 1050px; /* Conserve la largeur */
-    margin: 0 auto 0px auto; /* Centré horizontalement */
-    display: flex;
-    justify-content: space-between; /* Aligne les items avec un espacement équilibré */
-    align-items: center; /* Aligne verticalement au centre */
-    gap: 10px; /* Contrôle directement l'espacement entre les items */
-    background: rgba(0, 0, 0, 0.6); /* Fond semi-transparent */
-    padding: 20px 0px; /* Ajuste les espacements internes */
-    border-radius: 8px; /* Coins arrondis */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Ombre */
-  }
-  
-  #ui-container > div, #ui-container > button {
-      margin: 0; /* Supprime les marges autour des enfants */
-      padding: 0px 10px; /* Ajuste les espacements internes si nécessaire */
-  }
-  
-  #score, #level, #scoreToPass {
-    flex-shrink: 1;
-    font-size: 16px;
-    color: #00ffea;
-    margin: 0 10px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-  }
-  #timer{
-    flex-shrink: 1;
-    font-size: 16px;
-    color: #00ffea;
-    margin: 0 10px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-  }
-  
-  /* -------------------------------------------------
-     BOUTON START
-     ------------------------------------------------- */
-  #startButton {
-    position: relative; /* Nécessaire pour utiliser transform */
-    transform: translateX(-20px); /* Décale le score de 20px vers la droite */
-    height: 66px;
-    padding: 16px 16px;
-    background-color: #007b38; /* Vert punchy */
-    color: #fff;
-    border: 2px solid #00ffea;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background-color 0.2s, transform 0.2s;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-    font-family: 'Press Start 2P', Arial, sans-serif;
-  }
-  
-  #startButton:hover {
-    background-color: #00a44c;
-    transform: scale(1.05) translateX(-20px);
-  }
-  
-  #startButton:disabled {
-    background-color: #333;
-    color: #aaa;
-    border-color: #666;
-    cursor: not-allowed;
-  }
-  
-  /* -------------------------------------------------
-     OVERLAY
-     ------------------------------------------------- */
-  #overlay {
-    position: fixed;
-    top: 0; 
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    justify-content: center; 
-    align-items: center;
-    z-index: 9999;
-  }
-  
-  #overlay-content {
-    background: #222;
-    padding: 20px 30px;
-    border-radius: 8px;
-    text-align: center;
-    color: #fff;
-    border: 2px solid #00ffea;
-    box-shadow: 0 0 10px rgba(0,0,0,0.7);
-  }
-  
-  #overlay-content h2 {
-    margin-bottom: 20px;
-    font-size: 18px;
-    color: #00ffea;
-    text-shadow: 1px 1px 2px #000;
-  }
-  
-  #overlay-content input[type="number"] {
-    width: 60px;
-    padding: 5px;
-    font-size: 16px;
-    text-align: center;
-    font-family: 'Press Start 2P', Arial, sans-serif;
-    margin-right: 10px;
-    border: 2px solid #00ffea;
-    background: #000;
-    color: #00ffea;
-    border-radius: 4px;
-    outline: none;
-  }
-  
-  #overlay-content button {
-    background-color: #007b38;
-    color: #fff;
-    border: 2px solid #00ffea;
-    font-size: 14px;
-    padding: 8px 16px;
-    font-family: 'Press Start 2P', Arial, sans-serif;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background-color 0.2s, transform 0.2s;
-  }
-  
-  #overlay-content button:hover {
-    background-color: #00a44c;
-    transform: scale(1.05);
-  }
-  /************************************************
-   OVERLAY SPÉCIAL « LEVEL UP »
- ************************************************/
+/**
+ * \brief Barre d’interface : #ui-container
+ *  - max-width 1050px
+ *  - flex horizontal (score, timer, etc.)
+ *  - fond semi-transparent
+ */
+#ui-container {
+  width: 100%;
+  max-width: 1050px;
+  margin: 0 auto 0px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 20px 0px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+#ui-container > div, #ui-container > button {
+  margin: 0;
+  padding: 0px 10px;
+}
+
+/** Labels textuels : #score, #level, #scoreToPass, #timer */
+#score, #level, #scoreToPass {
+  flex-shrink: 1;
+  font-size: 16px;
+  color: #00ffea;
+  margin: 0 10px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+#timer {
+  flex-shrink: 1;
+  font-size: 16px;
+  color: #00ffea;
+  margin: 0 10px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/**
+ * \brief Bouton “Démarrer”
+ *  - Haut de 66px, hover : scale + couleur plus claire
+ */
+#startButton {
+  position: relative;
+  transform: translateX(-20px);
+  height: 66px;
+  padding: 16px 16px;
+  background-color: #007b38;
+  color: #fff;
+  border: 2px solid #00ffea;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s, transform 0.2s;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  font-family: 'Press Start 2P', Arial, sans-serif;
+}
+#startButton:hover {
+  background-color: #00a44c;
+  transform: scale(1.05) translateX(-20px);
+}
+#startButton:disabled {
+  background-color: #333;
+  color: #aaa;
+  border-color: #666;
+  cursor: not-allowed;
+}
+
+/**
+ * \brief Overlay principal (#overlay) : pour choisir le nombre d’ascenseurs
+ *  - fond sombre, centré
+ */
+#overlay {
+  position: fixed;
+  top: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+#overlay-content {
+  background: #222;
+  padding: 20px 30px;
+  border-radius: 8px;
+  text-align: center;
+  color: #fff;
+  border: 2px solid #00ffea;
+  box-shadow: 0 0 10px rgba(0,0,0,0.7);
+}
+#overlay-content h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #00ffea;
+  text-shadow: 1px 1px 2px #000;
+}
+#overlay-content input[type="number"] {
+  width: 60px;
+  padding: 5px;
+  font-size: 16px;
+  text-align: center;
+  font-family: 'Press Start 2P', Arial, sans-serif;
+  margin-right: 10px;
+  border: 2px solid #00ffea;
+  background: #000;
+  color: #00ffea;
+  border-radius: 4px;
+  outline: none;
+}
+#overlay-content button {
+  background-color: #007b38;
+  color: #fff;
+  border: 2px solid #00ffea;
+  font-size: 14px;
+  padding: 8px 16px;
+  font-family: 'Press Start 2P', Arial, sans-serif;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s, transform 0.2s;
+}
+#overlay-content button:hover {
+  background-color: #00a44c;
+  transform: scale(1.05);
+}
+
+/**
+ * \brief Overlay “LEVEL UP” : s’affiche quand un niveau est réussi
+ * - Fond sombre, texte glitch
+ */
 #level-up-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* Fond semi-transparent pour faire un effet de flash ou de pulsation */
   background: rgba(0, 0, 0, 0.8);
-  z-index: 99999; /* Au-dessus de tout */
-  display: none;  /* Masqué par défaut */
+  z-index: 99999;
+  display: none;
   justify-content: center;
   align-items: center;
 }
-
-/* Le texte "Level Up" ou "Niveau X terminé" */
 #level-up-text {
-  color: #00ffea;  /* Turquoise flashy pour rester dans la DA */
+  color: #00ffea;
   font-size: 48px;
   font-family: 'Press Start 2P', Arial, sans-serif;
   text-align: center;
@@ -307,53 +316,38 @@ body.night-theme {
   border: 3px solid #00ffea;
   border-radius: 8px;
   text-shadow: 2px 2px 3px #000;
-  /* Effet "glitch" ou "clignotant" : keyframes CSS */
   animation: glitch 2s infinite;
 }
 
-/* Animation glitch ou clignotement */
+/**
+ * \brief Animation “glitch” : petits décalages horizontaux
+ */
 @keyframes glitch {
-  0% {
-    transform: translate(0, 0);
-    opacity: 1;
-  }
-  20% {
-    transform: translate(2px, 0);
-    opacity: 0.8;
-  }
-  40% {
-    transform: translate(-2px, 0);
-    opacity: 0.5;
-  }
-  60% {
-    transform: translate(1px, -1px);
-    opacity: 1;
-  }
-  80% {
-    transform: translate(-1px, 1px);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translate(0, 0);
-    opacity: 1;
-  }
+  0%   { transform: translate(0, 0); opacity: 1; }
+  20%  { transform: translate(2px, 0); opacity: 0.8; }
+  40%  { transform: translate(-2px, 0); opacity: 0.5; }
+  60%  { transform: translate(1px, -1px); opacity: 1; }
+  80%  { transform: translate(-1px, 1px); opacity: 0.8; }
+  100% { transform: translate(0, 0); opacity: 1; }
 }
 
-/* Overlay de confirmation */
+/**
+ * \brief Overlay de confirmation (#confirm-overlay)
+ *  - “Voulez-vous quitter la partie ?”
+ *  - Visible quand on clique sur “Home”
+ */
 #confirm-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6); /* Fond semi-transparent */
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99999; /* Toujours au-dessus du reste */
+  z-index: 99999;
 }
-
-/* Contenu de la boîte de dialogue */
 #confirm-content {
   background: #222;
   color: #fff;
@@ -363,12 +357,10 @@ body.night-theme {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
   border: 2px solid #00ffea;
 }
-
 #confirm-content p {
   font-size: 18px;
   margin-bottom: 20px;
 }
-
 #confirm-content button {
   margin: 0 10px;
   padding: 10px 20px;
@@ -378,44 +370,40 @@ body.night-theme {
   cursor: pointer;
   transition: background-color 0.2s;
 }
-
 #confirmYesButton {
   background: #d9534f;
   color: #fff;
 }
-
 #confirmYesButton:hover {
   background: #c9302c;
 }
-
 #confirmNoButton {
   background: #5bc0de;
   color: #fff;
 }
-
 #confirmNoButton:hover {
   background: #31b0d5;
 }
 
-/************************************************
-  OVERLAY SPÉCIAL « FAIL »
-************************************************/
+/**
+ * \brief Overlay “FAIL” : s’affiche quand on perd un niveau
+ *  - Fond rouge semi-transparent
+ *  - Animation shake
+ */
 #level-fail-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* Fond semi-transparent rougeâtre */
   background: rgba(153, 0, 0, 0.8);
-  z-index: 99999; /* Au-dessus de tout */
-  display: none;  /* Masqué par défaut */
+  z-index: 99999;
+  display: none;
   justify-content: center;
   align-items: center;
 }
-
 #level-fail-text {
-  color: #ff5555; /* Rouge flashy */
+  color: #ff5555;
   font-size: 48px;
   font-family: 'Press Start 2P', Arial, sans-serif;
   text-align: center;
@@ -423,27 +411,34 @@ body.night-theme {
   border: 3px solid #ff5555;
   border-radius: 8px;
   text-shadow: 2px 2px 3px #000;
-  /* Petite animation de "secousse" */
   animation: shake 0.8s infinite;
 }
 
-/* Animation de secousse / tremblement */
+/**
+ * \brief Animation “shake” : secousses horizontales rapides
+ */
 @keyframes shake {
-  0% { transform: translate(0, 0); }
-  20% { transform: translate(-3px, 0); }
-  40% { transform: translate(3px, 0); }
-  60% { transform: translate(-3px, 0); }
-  80% { transform: translate(3px, 0); }
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-3px, 0); }
+  40%  { transform: translate(3px, 0); }
+  60%  { transform: translate(-3px, 0); }
+  80%  { transform: translate(3px, 0); }
   100% { transform: translate(0, 0); }
 }
 
+/**
+ * \brief Bouton “Home”
+ *  - Cercle (50% border-radius)
+ *  - Dégradé (#2a2a72 -> #009ffd)
+ *  - Hover : scale + ombre plus marquée
+ */
 #homeButton {
-  position: relative; /* Nécessaire pour utiliser transform */
-  transform: translateX(-15px); /* Décale le score de 20px vers la droite */
+  position: relative;
+  transform: translateX(-15px);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px; 
+  width: 40px;
   height: 40px;
   border: 2px solid #00ffea;
   border-radius: 50%;
@@ -452,16 +447,13 @@ body.night-theme {
               0 0 20px rgba(0, 255, 234, 0.3);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  margin-left: 10px; /* Pour créer un petit espace après le bouton Settings */
+  margin-left: 10px;
 }
-
 #homeButton .material-icons {
   font-size: 28px;
   color: #00ffea;
   transition: transform 0.2s ease-in-out;
 }
-
-/* Effet hover */
 #homeButton:hover {
   transform: scale(1.1) translateX(-15px);
   box-shadow:
@@ -469,51 +461,47 @@ body.night-theme {
     0 0 30px rgba(0, 255, 234, 0.6);
 }
 #homeButton:hover .material-icons {
-  transform: rotate(10deg); /* Ou autre petit effet */
+  transform: rotate(10deg);
 }
 
-/************************************************
-  OVERLAY « MODE DE JEU »
-************************************************/
+/**
+ * \brief Overlay “mode de jeu” (Solo / IA / Online)
+ *  - S’affiche au démarrage du jeu
+ */
 #mode-overlay {
-  position: fixed;              /* Au-dessus de tout et fixe sur l’écran */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8); /* Fond semi-transparent pour masquer le jeu */
+  background: rgba(0, 0, 0, 0.8);
   display: flex; 
   justify-content: center;
   align-items: center;
-  z-index: 99999;               /* En premier plan */
+  z-index: 99999;
 }
-
 #mode-content {
-  background: #000;             /* Fond noir */
-  border: 3px solid #00ffea;    /* Encadré turquoise */
-  border-radius: 8px; 
+  background: #000;
+  border: 3px solid #00ffea;
+  border-radius: 8px;
   padding: 30px 50px;
-  box-shadow: 0 0 15px rgba(0, 255, 234, 0.5); /* Lueur turquoise */
+  box-shadow: 0 0 15px rgba(0, 255, 234, 0.5);
   text-align: center;
   color: #fff;
   font-family: 'Press Start 2P', Arial, sans-serif;
 }
-
-/* Titre */
 #mode-content h2 {
   margin-bottom: 20px;
   font-size: 20px;
-  color: #00ffea;            /* Titre turquoise */
+  color: #00ffea;
   text-shadow: 1px 1px 2px #000;
 }
-
-/* Boutons de mode de jeu */
 #mode-content button {
   display: block;
   width: 220px;
   margin: 10px auto;
   padding: 10px;
-  background-color: #007b38;  /* Vert punchy rétro */
+  background-color: #007b38;
   color: #fff;
   border: 2px solid #00ffea;
   font-size: 14px;
@@ -523,14 +511,15 @@ body.night-theme {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
   font-family: 'Press Start 2P', Arial, sans-serif;
 }
-
 #mode-content button:hover {
   background-color: #00a44c;
   transform: scale(1.05);
 }
-/************************************************
-  OVERLAY « PARAMÈTRES »
-************************************************/
+
+/**
+ * \brief Overlay “Paramètres” (choix du thème)
+ *  - Caché par défaut, affiché via #settingsButton
+ */
 #settings-overlay {
   position: fixed;
   top: 0; 
@@ -538,12 +527,11 @@ body.night-theme {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.8);
-  display: none;         /* Masqué par défaut */
+  display: none;
   justify-content: center; 
   align-items: center;
   z-index: 9999;
 }
-
 #settings-content {
   background: #222;
   padding: 20px 30px;
@@ -553,59 +541,50 @@ body.night-theme {
   border: 2px solid #00ffea;
   box-shadow: 0 0 10px rgba(0,0,0,0.7);
 }
-
 #settings-content h2 {
   margin-bottom: 20px;
   font-size: 18px;
   color: #00ffea;
   text-shadow: 1px 1px 2px #000;
 }
+
+/** Bouton “Settings” (icône) */
 #settingsButton {
-  position: relative; /* Nécessaire pour utiliser transform */
-  transform: translateX(-15px); /* Décale le score de 20px vers la droite */
+  position: relative;
+  transform: translateX(-15px);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px; /* Même valeur pour la largeur */
-  height: 40px; /* Même valeur pour la hauteur */
-  border: 2px solid #00ffea; /* Bordure turquoise */
-  border-radius: 50%; /* 50% pour un cercle parfait */
-  background: linear-gradient(135deg, #2a2a72, #009ffd); /* Fond harmonisé avec la DA */
+  width: 40px;
+  height: 40px;
+  border: 2px solid #00ffea;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a2a72, #009ffd);
   box-shadow:
     0 0 10px rgba(0, 255, 234, 0.5),
     0 0 20px rgba(0, 255, 234, 0.3);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  margin-left: auto; /* Aligner à droite */
+  margin-left: auto;
 }
-
 #settingsButton:hover {
-  transform: scale(1.1) translateX(-15px); /* Agrandissement au survol */
+  transform: scale(1.1) translateX(-15px);
   box-shadow:
     0 0 15px rgba(0, 255, 234, 0.8),
     0 0 30px rgba(0, 255, 234, 0.6);
 }
-
-/* Style de l’icône */
 #settingsButton .material-icons {
-  font-size: 28px; /* Taille de l’icône adaptée */
-  color: #00ffea; /* Couleur turquoise */
+  font-size: 28px;
+  color: #00ffea;
   transition: transform 0.2s ease-in-out;
 }
-
 #settingsButton:hover .material-icons {
-  transform: rotate(30deg); /* Rotation au survol */
+  transform: rotate(30deg);
 }
 
-
-
-
-
-
-
-
-
-/* Le sélecteur (dropdown) */
+/**
+ * \brief Le sélecteur de thème (dropdown) dans l’overlay de paramètres
+ */
 #themeSelect {
   font-family: 'Press Start 2P', Arial, sans-serif;
   font-size: 14px;
@@ -619,11 +598,10 @@ body.night-theme {
   outline: none;
 }
 
-/* Boutons Appliquer / Annuler */
+/** Boutons Appliquer / Annuler du menu paramètres */
 .settings-buttons {
   margin-top: 20px;
 }
-
 .settings-buttons button {
   background-color: #007b38;
   color: #fff;
@@ -636,15 +614,14 @@ body.night-theme {
   transition: background-color 0.2s, transform 0.2s;
   margin: 0 10px;
 }
-
 .settings-buttons button:hover {
   background-color: #00a44c;
   transform: scale(1.05);
 }
 #cancelSettingsButton {
-  background-color: #888; /* Gris moyen */
-  color: #fff; /* Texte blanc pour un bon contraste */
-  border: 2px solid #666; /* Bordure légèrement plus foncée */
+  background-color: #888;
+  color: #fff;
+  border: 2px solid #666;
   font-size: 14px;
   padding: 8px 16px;
   font-family: 'Press Start 2P', Arial, sans-serif;
@@ -652,13 +629,12 @@ body.night-theme {
   border-radius: 6px;
   transition: background-color 0.2s, transform 0.2s;
 }
-
 #cancelSettingsButton:hover {
-  background-color: #666; /* Gris plus foncé au survol */
-  transform: scale(1.05); /* Légère augmentation de la taille */
+  background-color: #666;
+  transform: scale(1.05);
 }
 #applySettingsButton {
-  background-color: #007b38; /* Vert punchy */
+  background-color: #007b38;
   color: #fff;
   border: 2px solid #00ffea;
   font-size: 14px;
@@ -668,24 +644,20 @@ body.night-theme {
   border-radius: 6px;
   transition: background-color 0.2s, transform 0.2s;
 }
-
 #applySettingsButton:hover {
-  background-color: #00a44c; /* Vert plus clair au survol */
+  background-color: #00a44c;
   transform: scale(1.05);
 }
 
-
- 
-
-
-  /* -------------------------------------------------
-     FLOORS LABEL (SI UTILISÉ) - exemple
-     ------------------------------------------------- */
-  .floor-label {
-    position: absolute;
-    right: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #00ffea;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-  }
+/**
+ * \brief Exemple de label pour un étage
+ * (si besoin de placer un texte “Floor X” sur le canvas)
+ */
+.floor-label {
+  position: absolute;
+  right: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #00ffea;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
