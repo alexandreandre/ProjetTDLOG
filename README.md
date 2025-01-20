@@ -120,3 +120,13 @@ Améliorations pour la prochaine fois :
 A faire : 
 - Ajouter sons
 - Ajouter IA (adapter code de louis a notre truc)
+
+20 janvier : 
+- Bouton home
+- Ajout IA
+- Difficulté de l'IA
+- Musique de fond
+
+A faire :
+- Ajouter son de défaite
+- Jeu en ligne 
