@@ -257,7 +257,7 @@ class Elevator {
                 ctx.font = `bold ${passengerRadius * 1.2}px Arial`;
                 ctx.fillText(`
                   ${this.passengers[i].destinationFloor}`,
-                  passengerX-70,
+                  x,
                   passengerY + (passengerRadius * 0.4)
                 );
             } else {

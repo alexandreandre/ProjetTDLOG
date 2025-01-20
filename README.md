@@ -111,3 +111,12 @@ Améliorations pour la prochaine fois :
 - NOUVEAUX MODES : 
         - Match contre l'IA (soit chacun a ses passagers, soit on a les memes et le premier qui le récupère l'a) avec plusieurs niveaux d'IA (a choisir en les faisant s'affronter)
         - Match 1v1 en ligne (idem)
+
+
+13 janvier :
+- Bouton réglage
+- Menu de mode de jeu 
+
+A faire : 
+- Ajouter sons
+- Ajouter IA (adapter code de louis a notre truc)
