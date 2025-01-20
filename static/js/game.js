@@ -705,13 +705,19 @@ canvas.addEventListener('click', function(event) {
 // =================== INITIALISATION DU JEU ===================
 function initGame() {
     console.log("Initialisation du jeu...");
-    document.getElementById("startButton").addEventListener("click", () => {const bgMusicEl = document.getElementById("bgMusic");
-      if (bgMusicEl && bgMusicEl.muted) {
+
+    // Écouteur sur le bouton "Démarrer le niveau"
+    document.getElementById("startButton").addEventListener("click", () => {
+        const bgMusicEl = document.getElementById("bgMusic");
+        if (bgMusicEl && bgMusicEl.muted) {
             bgMusicEl.muted = false;
-            bgMusicEl.play().catch(err => {console.warn("Toujours bloqué…", err);});
+            bgMusicEl.play().catch(err => {
+                console.warn("Toujours bloqué…", err);
+            });
         }
-      startLevel();
+        startLevel();
     });
+
     // Bouton de confirmation du nombre d'ascenseurs
     const confirmButton = document.getElementById("confirmElevatorCountButton");
     confirmButton.addEventListener("click", () => {
@@ -725,106 +731,77 @@ function initGame() {
 
         // Cacher l’overlay
         document.getElementById("overlay").style.display = "none";
-
         // Activer le bouton "Démarrer le niveau"
         document.getElementById("startButton").disabled = false;
 
         console.log(`Nombre d'ascenseurs sélectionné : ${selectedElevatorCount}`);
     });
 
-    // Bouton Home
-const homeButton = document.getElementById("homeButton");
-const confirmOverlay = document.getElementById("confirm-overlay");
-const confirmYesButton = document.getElementById("confirmYesButton");
-const confirmNoButton = document.getElementById("confirmNoButton");
+    // Bouton Home + confirmation
+    const homeButton = document.getElementById("homeButton");
+    const confirmOverlay = document.getElementById("confirm-overlay");
+    const confirmYesButton = document.getElementById("confirmYesButton");
+    const confirmNoButton = document.getElementById("confirmNoButton");
 
-homeButton.addEventListener("click", () => {
-    if (gameRunning) {
-        // Si une partie est en cours, afficher l'overlay de confirmation
-        confirmOverlay.style.display = "flex";
-    } else {
-        // Sinon, retour à l'accueil directement
+    homeButton.addEventListener("click", () => {
+        if (gameRunning) {
+            // Si une partie est en cours, afficher l'overlay de confirmation
+            confirmOverlay.style.display = "flex";
+        } else {
+            // Sinon, retour à l'accueil directement
+            returnToHome();
+        }
+    });
+
+    confirmYesButton.addEventListener("click", () => {
+        confirmOverlay.style.display = "none";
         returnToHome();
-    }
-});
+    });
+    confirmNoButton.addEventListener("click", () => {
+        confirmOverlay.style.display = "none";
+    });
 
-// Bouton "Oui" dans la confirmation
-confirmYesButton.addEventListener("click", () => {
-    // Fermer l'overlay de confirmation
-    confirmOverlay.style.display = "none";
+    function returnToHome() {
+        clearInterval(timerInterval);
+        clearInterval(spawnInterval);
+        gameRunning = false;
 
-    // Retourner à l'écran d'accueil
-    returnToHome();
-});
+        score = 0;
+        scoreAI = 0;
+        updateScore();
 
-// Bouton "Non" dans la confirmation
-confirmNoButton.addEventListener("click", () => {
-    // Fermer l'overlay de confirmation et continuer la partie
-    confirmOverlay.style.display = "none";
-});
+        elevators.length = 0;
+        characters.length = 0;
 
-// Fonction pour retourner à l'accueil (arrête la partie)
-function returnToHome() {
-    // 1. Arrêter la partie
-    clearInterval(timerInterval);
-    clearInterval(spawnInterval);
-    gameRunning = false;
+        const config = levelConfig[selectedElevatorCount][level];
+        for (let i = 0; i < selectedElevatorCount; i++) {
+            elevators.push(new Elevator(i, config.capacity, false));
+        }
+        drawBuilding();
 
-    // 2. Réinitialiser les scores
-    score = 0;
-    scoreAI = 0;
-    updateScore();
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("mode-overlay").style.display = "flex";
+        document.getElementById("startButton").disabled = true;
 
-    // 3. Réinitialiser les ascenseurs et passagers
-    elevators.length = 0;
-    characters.length = 0;
-    const config = levelConfig[selectedElevatorCount][level];
-    for (let i = 0; i < selectedElevatorCount; i++) {
-        elevators.push(new Elevator(i, config.capacity, false));
+        console.log("Retour à l'écran d'accueil : partie arrêtée, jeu réinitialisé.");
     }
 
-    // 4. Redessiner le bâtiment à son état initial
-    drawBuilding();
-
-    // 5. Masquer tous les overlays de jeu
-    document.getElementById("overlay").style.display = "none";
-
-    // 6. Afficher à nouveau l'overlay de choix du mode
-    const modeOverlay = document.getElementById("mode-overlay");
-    modeOverlay.style.display = "flex";
-
-    // 7. Désactiver le bouton "Démarrer"
-    document.getElementById("startButton").disabled = true;
-
-    console.log("Retour à l'écran d'accueil : partie arrêtée, jeu réinitialisé.");
-}
-
-
-
-    
-
-    // Paramètres
+    // Paramètres (thèmes)
     const settingsButton = document.getElementById("settingsButton");
     const settingsOverlay = document.getElementById("settings-overlay");
     const themeSelect = document.getElementById("themeSelect");
     const applySettingsButton = document.getElementById("applySettingsButton");
     const cancelSettingsButton = document.getElementById("cancelSettingsButton");
 
-    // Ouvrir menu paramètres
     settingsButton.addEventListener("click", () => {
         settingsOverlay.style.display = "flex";
     });
-
-    // Appliquer le thème
     applySettingsButton.addEventListener("click", () => {
         const selectedTheme = themeSelect.value; // "default", "retro", "night"
         document.body.classList.remove("default-theme", "retro-theme", "night-theme");
         document.body.classList.add(`${selectedTheme}-theme`);
-        // Fermer
         settingsOverlay.style.display = "none";
     });
-
-    // Annuler
     cancelSettingsButton.addEventListener("click", () => {
         settingsOverlay.style.display = "none";
     });
@@ -838,35 +815,52 @@ function returnToHome() {
     const aiModeButton = document.getElementById("aiModeButton");
     const onlineModeButton = document.getElementById("onlineModeButton");
 
+    // Conteneur de difficulté IA
+    const aiDifficultyContainer = document.getElementById("aiDifficultyContainer");
+
     // Mode Solo
     soloModeButton.addEventListener("click", () => {
-        isAIMode = false; // On n’est pas en mode IA
+        isAIMode = false;
         modeOverlay.style.display = "none";
+
+        // 1) On affiche l’overlay pour choisir le nombre d’ascenseurs
         document.getElementById("overlay").style.display = "flex";
+
+        // 2) On masque le conteneur de difficultés IA
+        aiDifficultyContainer.style.display = "none";
+
+        // 3) Ré-affiche le bouton "Confirmer" (si on l’avait caché en mode IA)
+        document.getElementById("confirmElevatorCountButton").style.display = "inline-block";
     });
 
     // 1 vs 1 contre l'IA
     aiModeButton.addEventListener("click", () => {
-        isAIMode = true; // On active le mode IA
+        isAIMode = true;
         modeOverlay.style.display = "none";
+
+        // 1) On affiche l’overlay principal
         document.getElementById("overlay").style.display = "flex";
-        // NOUVEAU : Afficher la sélection de difficulté IA
-        document.getElementById("aiDifficultyContainer").style.display = "block";
-        // Optionnel : on peut masquer le bouton "Confirmer" si on veut obliger le joueur
-        // à cliquer sur Facile/Moyen/Difficile pour lancer la partie
+
+        // 2) On affiche le conteneur de difficultés IA
+        aiDifficultyContainer.style.display = "block";
+
+        // 3) On masque éventuellement le bouton "Confirmer"
         document.getElementById("confirmElevatorCountButton").style.display = "none";
     });
+
+    // 1 vs 1 en ligne (non implémenté)
+    onlineModeButton.addEventListener("click", () => {
+        alert("Mode 1 vs 1 en ligne pas encore implémenté !");
+    });
+
     // Boutons de difficulté IA
     const easyBtn = document.getElementById("easyAIModeButton");
     const mediumBtn = document.getElementById("mediumAIModeButton");
     const hardBtn = document.getElementById("hardAIModeButton");
 
-    // Fonction qui lit le nombre d'ascenseurs et lance le niveau
     function setAIDifficulty(difficultyDelay) {
-        // 1) Fixer le délai de décision de l’IA
         aiDecisionDelay = difficultyDelay;
-    
-        // 2) Lire la valeur du nombre d'ascenseurs
+
         const elevatorInput = document.getElementById("elevatorCountInput");
         const val = parseInt(elevatorInput.value, 10);
         if (!isNaN(val) && val >= 1) {
@@ -874,29 +868,14 @@ function returnToHome() {
         } else {
             selectedElevatorCount = 1;
         }
-    
-        // 3) Masquer l’overlay et activer le bouton "Démarrer le niveau"
+
         document.getElementById("overlay").style.display = "none";
         document.getElementById("startButton").disabled = false;
-    
-        // IMPORTANT : on ne lance PAS startLevel() ici.
     }
 
-    easyBtn.addEventListener("click", () => {
-        setAIDifficulty(2000); // 2s
-    });
-    mediumBtn.addEventListener("click", () => {
-        setAIDifficulty(1000); // 1s
-    });
-    hardBtn.addEventListener("click", () => {
-        setAIDifficulty(0); // 0s
-    });
-    
-  
-    // 1 vs 1 en ligne (non implémenté)
-    onlineModeButton.addEventListener("click", () => {
-        alert("Mode 1 vs 1 en ligne pas encore implémenté !");
-    });
+    easyBtn.addEventListener("click", () => { setAIDifficulty(2000); });
+    mediumBtn.addEventListener("click", () => { setAIDifficulty(1000); });
+    hardBtn.addEventListener("click", () => { setAIDifficulty(0); });
 
     // Démarrage du rendu
     drawBuilding();
@@ -904,5 +883,6 @@ function returnToHome() {
 
     console.log("Jeu initialisé.");
 }
+
 
 window.onload = initGame;
