@@ -679,8 +679,14 @@ canvas.addEventListener('click', function(event) {
   const config = levelConfig[selectedElevatorCount][level];
   const floorHeight = canvas.height / config.floors;
   const rect = canvas.getBoundingClientRect();
-  const clickX = event.clientX - rect.left;
-  const clickY = event.clientY - rect.top;
+
+  // [1] AJOUT DU RATIO D'ÉCHELLE
+  const scaleX = canvas.width / rect.width;   // ratio horizontal
+  const scaleY = canvas.height / rect.height; // ratio vertical
+
+  // [2] UTILISATION DE CE RATIO DANS LE CALCUL DU CLIC
+  const clickX = (event.clientX - rect.left) * scaleX;
+  const clickY = (event.clientY - rect.top) * scaleY;
 
   let clickedElevator = null;
   // Détection si clic sur un ascenseur
