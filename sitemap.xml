@@ -1,11 +1,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
    <url>
-      <loc>https://tonsite.com</loc>
+      <loc>https://elevator-race-681acf8430a5.herokuapp.com/</loc>
       <lastmod>2025-01-30</lastmod>
       <priority>1.0</priority>
    </url>
    <url>
-      <loc>https://tonsite.com/game</loc>
+      <loc>https://elevator-race-681acf8430a5.herokuapp.com/</loc>
       <lastmod>2025-01-30</lastmod>
       <priority>0.8</priority>
    </url>
