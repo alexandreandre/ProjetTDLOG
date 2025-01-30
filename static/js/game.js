@@ -30,7 +30,7 @@ let selectedElevatorCount = 1;    //!< Nombre d’ascenseurs choisis
 
 // -- Mode IA
 let isAIMode = false;     //!< True si on joue en 1 vs 1 IA
-let aiDecisionDelay = 0;  //!< Délai (ms) entre les décisions de l’IA
+let aiDecisionDelay = 1000;  //!< Délai (ms) entre les décisions de l’IA
 
 const elevators = [];   //!< Tableau d’ascenseurs
 const characters = [];  //!< Tableau de passagers
@@ -807,6 +807,7 @@ function initGame() {
   function returnToHome() {
     clearInterval(timerInterval);
     clearInterval(spawnInterval);
+    level = 1;
     gameRunning = false;
 
     score = 0;
@@ -911,8 +912,8 @@ function initGame() {
   }
 
   easyBtn.addEventListener("click", () => { setAIDifficulty(2000); });
-  mediumBtn.addEventListener("click", () => { setAIDifficulty(1000); });
-  hardBtn.addEventListener("click", () => { setAIDifficulty(0); });
+  mediumBtn.addEventListener("click", () => { setAIDifficulty(1500); });
+  hardBtn.addEventListener("click", () => { setAIDifficulty(1000); });
 
   // Premier dessin + lancement de la boucle
   drawBuilding();
