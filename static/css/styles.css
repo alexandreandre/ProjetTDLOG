@@ -100,8 +100,12 @@ body.night-theme {
  */
 #game-container {
   position: relative;
+  max-width: 100%; /* Ou max-width: 800px si vous voulez limiter la taille */
+  max-height: 100%; /* Ou un autre calcul */
+  width: 100%;
   width: 800px;
   height: 600px;
+  height: auto;
   margin: 0 auto;
   border: 2px solid #000;
   box-shadow: 0 0 20px rgba(0,0,0,0.5);
@@ -154,6 +158,8 @@ body.night-theme {
  */
 #gameCanvas {
   display: block;
+  width: 100%;
+  height: auto; 
   background: #202020;
   border: 3px solid #00ffea;
   border-radius: 8px;

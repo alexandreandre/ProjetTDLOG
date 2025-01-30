@@ -537,6 +537,8 @@ function startTimer() {
   }, 1000);
 }
 
+
+
 /**
  * \brief Vérifie la fin de niveau (score atteint ou non).
  *  - Mode IA : compare score / scoreAI
