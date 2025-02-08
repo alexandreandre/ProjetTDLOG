@@ -31,7 +31,7 @@
     - Ajout du paramètre `floor` dans la configuration des niveaux.
     - Possibilité de choisir le nombre d’ascenseurs (de 1 à 5) et de définir des couleurs personnalisées pour l’ascenseur (à l’arrêt et en mouvement) ainsi que pour les personnages.
 
-- **6 Janvier**  
+- **16 Décembre**  
   - Organisation et clarification du code :
     - **`app.py`** gère les routes et sert l’interface.
     - **`index.html`** constitue la page principale avec l’interface utilisateur et divers overlays (confirmation, mode de jeu, réglages).
@@ -77,28 +77,30 @@
 
 La structure actuelle du projet est la suivante :
 
-/
-├── __pycache__/
-│   └── app.cpython-310.pyc
-├── static/
-│   ├── audio/
-│   │   ├── jazz.mp3
-│   │   ├── Logobi mptres.mp3
-│   │   ├── lost.mp3
-│   │   ├── lost2.mp3
-│   │   └── win.mp3
-│   ├── css/
-│   │   └── styles.css
-│   └── js/
-│       └── game.js
-├── templates/
-│   └── index.html
-├── app.py
-├── Procfile
-├── README.md
-├── requirements.txt
-├── runtime.txt
-└── sitemap.xml
+
+├── __pycache__  
+│   └── app.cpython-310.pyc  
+├── static/  
+│   ├── audio/  
+│   │   ├── jazz.mp3  
+│   │   ├── Logobi mptres.mp3  
+│   │   ├── lost.mp3  
+│   │   ├── lost2.mp3  
+│   │   └── win.mp3  
+│   ├── css/  
+│   │   └── styles.css  
+│   └── js/  
+│       └── game.js  
+├── templates/  
+│   └── index.html  
+├── app.py  
+├── Procfile  
+├── README.md  
+├── requirements.txt  
+├── runtime.txt  
+└── sitemap.xml  
+
+
 
 Les autres fichiers (Procfile, runtime.txt, sitemap.xml) servent à la configuration et au déploiement (par exemple, sur Heroku).
 
